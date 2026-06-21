@@ -1,5 +1,6 @@
 import { createContext, useContext, useReducer, useEffect, useCallback, useRef } from 'react';
 import { api } from '../services/apiClient';
+import { isIndianMarketOpen } from '../utils/marketHours';
 
 function emptySlice() {
   return { data: null, loading: false, error: null };
@@ -89,6 +90,8 @@ export function PortfolioProvider({ children }) {
   // These are the only datasets that need continuous updates. The rest are
   // loaded once on startup (or when the user explicitly refreshes).
   const refreshLiveHoldings = useCallback(async () => {
+    // Automatic polling is limited to regular NSE market hours in IST.
+    if (!isIndianMarketOpen()) return;
     if (liveRefreshInFlight.current) return;
 
     liveRefreshInFlight.current = true;

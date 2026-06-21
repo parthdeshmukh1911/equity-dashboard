@@ -8,6 +8,7 @@ import PrivacyToggle from '../../components/ui/PrivacyToggle';
 import { SlidersHorizontal, X } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
 import RefreshButton from '../../components/ui/RefreshButton';
+import usePageScrollRestoration from '../../hooks/usePageScrollRestoration';
 
 // ── Tab configuration ────────────────────────────────────────────────────────
 
@@ -46,6 +47,7 @@ const pageVariants = {
  * Requirements: 4.1, 4.2, 4.6
  */
 export default function PortfolioPage() {
+  const scrollRef = usePageScrollRestoration('portfolio');
   const [activeTab, setActiveTab] = useState(TAB_LABELS[0]);
   const [selectedHolding, setSelectedHolding] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
@@ -151,7 +153,8 @@ export default function PortfolioPage() {
 
   return (
     <motion.main
-      className="flex flex-col min-h-screen pb-24"
+      ref={scrollRef}
+      className="flex min-h-0 flex-1 flex-col overflow-y-auto pb-24"
       style={{
         background: '#0F172A',
         paddingTop: 'max(1.25rem, env(safe-area-inset-top))',

@@ -33,7 +33,7 @@ function PageFallback() {
 // ---------------------------------------------------------------------------
 function AppShell() {
   return (
-    <div className="relative flex flex-col min-h-screen bg-[#0F172A]">
+    <div className="relative flex h-[100svh] flex-col overflow-hidden bg-[#0F172A]">
       {/* Active page renders here */}
       <Suspense fallback={<PageFallback />}>
         <Outlet />

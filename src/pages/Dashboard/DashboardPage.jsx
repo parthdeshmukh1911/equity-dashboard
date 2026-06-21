@@ -9,6 +9,7 @@ import StocksAllocation from './StocksAllocation';
 import Button from '../../components/ui/Button';
 import PrivacyToggle from '../../components/ui/PrivacyToggle';
 import RefreshButton from '../../components/ui/RefreshButton';
+import usePageScrollRestoration from '../../hooks/usePageScrollRestoration';
 
 function ErrorBanner({ onRetry }) {
   return (
@@ -44,6 +45,7 @@ function ErrorBanner({ onRetry }) {
 
 export default function DashboardPage() {
   const { state, refreshAll } = usePortfolio();
+  const scrollRef = usePageScrollRestoration('dashboard');
 
   const { overallInvestments, assetAllocation, overallSectorAllocation, stocksAllocation } = state;
 
@@ -51,7 +53,12 @@ export default function DashboardPage() {
   const hasError = !!overallInvestments.error || !!assetAllocation.error || !!overallSectorAllocation.error || !!stocksAllocation.error;
 
   return (
-    <main className="flex-1 overflow-y-auto px-4 pt-6 pb-28 bg-slate-900" id="dashboard-main">
+    <main
+      ref={scrollRef}
+      className="min-h-0 flex-1 overflow-y-auto px-4 pb-28 bg-slate-900"
+      id="dashboard-main"
+      style={{ paddingTop: 'max(1.5rem, env(safe-area-inset-top))' }}
+    >
       <div className="max-w-[428px] mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-white">Dashboard</h1>

@@ -6,6 +6,7 @@ import Skeleton from '../../components/ui/Skeleton';
 import PrivacyToggle from '../../components/ui/PrivacyToggle';
 import { usePrivacy } from '../../context/PrivacyContext';
 import RefreshButton from '../../components/ui/RefreshButton';
+import usePageScrollRestoration from '../../hooks/usePageScrollRestoration';
 
 // ─── Framer Motion variants ───────────────────────────────────────────────────
 
@@ -108,6 +109,7 @@ function FullStocksList({ data, loading }) {
 
 export default function AnalyticsPage() {
   const { state, fetchOverallSectorAllocation, fetchStocksAllocation, refreshAll } = usePortfolio();
+  const scrollRef = usePageScrollRestoration('analytics');
 
   const { data: sectorData, loading: sectorLoading } = state.overallSectorAllocation;
   const { data: stocksData, loading: stocksLoading } = state.stocksAllocation;
@@ -120,10 +122,14 @@ export default function AnalyticsPage() {
 
   return (
     <main
-      className="flex-1 overflow-y-auto px-4 pt-6 pb-28 bg-slate-900"
+      ref={scrollRef}
+      className="min-h-0 flex-1 overflow-y-auto px-4 pb-28 bg-slate-900"
       aria-label="Analytics"
       id="analytics-main"
-      style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))' }}
+      style={{
+        paddingTop: 'max(1.5rem, env(safe-area-inset-top))',
+        paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))',
+      }}
     >
       <div className="max-w-[428px] mx-auto">
         <div className="flex items-center justify-between mb-6">

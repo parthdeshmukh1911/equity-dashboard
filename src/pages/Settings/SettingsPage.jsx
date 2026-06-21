@@ -7,6 +7,7 @@ import { usePortfolio } from '../../context/PortfolioContext';
 import Button from '../../components/ui/Button';
 import Toast from '../../components/ui/Toast';
 import RefreshButton from '../../components/ui/RefreshButton';
+import usePageScrollRestoration from '../../hooks/usePageScrollRestoration';
 
 // App version — falls back to '0.0.0' if env var is not set (Requirement 7.4)
 const APP_VERSION = import.meta.env.VITE_APP_VERSION ?? '0.0.0';
@@ -37,6 +38,7 @@ function formatLastUpdated(date) {
 export default function SettingsPage() {
   const { mode, toggle, isStorageAvailable } = useTheme();
   const { state, refreshAll } = usePortfolio();
+  const scrollRef = usePageScrollRestoration('settings');
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [errorToast, setErrorToast] = useState(null);
@@ -87,8 +89,10 @@ export default function SettingsPage() {
   return (
     <>
       <main
-        className="flex-1 overflow-y-auto px-4 pt-6 pb-28"
+        ref={scrollRef}
+        className="min-h-0 flex-1 overflow-y-auto px-4 pb-28"
         aria-label="Settings"
+        style={{ paddingTop: 'max(1.5rem, env(safe-area-inset-top))' }}
       >
         {/* ── Page heading ──────────────────────────────────────────────── */}
         <div className="flex items-center justify-between mb-6">
