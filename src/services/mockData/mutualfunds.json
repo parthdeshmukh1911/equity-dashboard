@@ -1,0 +1,58 @@
+[
+  {
+    "id": "mf-axis-bluechip",
+    "name": "Axis Bluechip Fund",
+    "sector": "Large Cap",
+    "category": "mutualfund",
+    "quantity": 250,
+    "investedValue": 30000,
+    "currentValue": 34500,
+    "returnValue": 4500,
+    "returnPct": 15.0,
+    "portfolioWeight": 5.87,
+    "confidenceLevel": "High",
+    "avgPurchasePrice": 120
+  },
+  {
+    "id": "mf-parag-parikh-flexi",
+    "name": "Parag Parikh Flexi Cap Fund",
+    "sector": "Flexi Cap",
+    "category": "mutualfund",
+    "quantity": 180,
+    "investedValue": 25000,
+    "currentValue": 29700,
+    "returnValue": 4700,
+    "returnPct": 18.8,
+    "portfolioWeight": 5.05,
+    "confidenceLevel": "High",
+    "avgPurchasePrice": 138.89
+  },
+  {
+    "id": "mf-mirae-emerging",
+    "name": "Mirae Asset Emerging Bluechip",
+    "sector": "Large & Mid Cap",
+    "category": "mutualfund",
+    "quantity": 200,
+    "investedValue": 28000,
+    "currentValue": 30800,
+    "returnValue": 2800,
+    "returnPct": 10.0,
+    "portfolioWeight": 5.24,
+    "confidenceLevel": "Medium",
+    "avgPurchasePrice": 140
+  },
+  {
+    "id": "mf-sbi-small-cap",
+    "name": "SBI Small Cap Fund",
+    "sector": "Small Cap",
+    "category": "mutualfund",
+    "quantity": 120,
+    "investedValue": 18000,
+    "currentValue": 16200,
+    "returnValue": -1800,
+    "returnPct": -10.0,
+    "portfolioWeight": 2.76,
+    "confidenceLevel": "Low",
+    "avgPurchasePrice": 150
+  }
+]

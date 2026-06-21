@@ -1,0 +1,72 @@
+[
+  {
+    "id": "etf-nifty-50",
+    "name": "Nippon India ETF Nifty 50",
+    "sector": "Index Fund",
+    "category": "etf",
+    "quantity": 100,
+    "investedValue": 18000,
+    "currentValue": 21000,
+    "returnValue": 3000,
+    "returnPct": 16.67,
+    "portfolioWeight": 3.57,
+    "confidenceLevel": "High",
+    "avgPurchasePrice": 180
+  },
+  {
+    "id": "etf-bank-nifty",
+    "name": "ICICI Prudential Nifty Bank ETF",
+    "sector": "Banking",
+    "category": "etf",
+    "quantity": 80,
+    "investedValue": 24000,
+    "currentValue": 26400,
+    "returnValue": 2400,
+    "returnPct": 10.0,
+    "portfolioWeight": 4.49,
+    "confidenceLevel": "High",
+    "avgPurchasePrice": 300
+  },
+  {
+    "id": "etf-gold",
+    "name": "HDFC Gold ETF",
+    "sector": "Commodities",
+    "category": "etf",
+    "quantity": 50,
+    "investedValue": 25000,
+    "currentValue": 27500,
+    "returnValue": 2500,
+    "returnPct": 10.0,
+    "portfolioWeight": 4.68,
+    "confidenceLevel": "Medium",
+    "avgPurchasePrice": 500
+  },
+  {
+    "id": "etf-it",
+    "name": "ICICI Prudential Nifty IT ETF",
+    "sector": "Information Technology",
+    "category": "etf",
+    "quantity": 120,
+    "investedValue": 30000,
+    "currentValue": 33600,
+    "returnValue": 3600,
+    "returnPct": 12.0,
+    "portfolioWeight": 5.72,
+    "confidenceLevel": "High",
+    "avgPurchasePrice": 250
+  },
+  {
+    "id": "etf-next-50",
+    "name": "Motilal Oswal Nifty Next 50 ETF",
+    "sector": "Index Fund",
+    "category": "etf",
+    "quantity": 150,
+    "investedValue": 22500,
+    "currentValue": 24000,
+    "returnValue": 1500,
+    "returnPct": 6.67,
+    "portfolioWeight": 4.08,
+    "confidenceLevel": "Medium",
+    "avgPurchasePrice": 150
+  }
+]

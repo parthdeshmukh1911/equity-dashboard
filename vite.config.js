@@ -1,0 +1,86 @@
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import { VitePWA } from 'vite-plugin-pwa'
+
+// https://vite.dev/config/
+export default defineConfig({
+  base: '/equity-dashboard/',
+  // Dev server proxy to avoid CORS during local development. Requests to /api
+  // will be forwarded to the configured Apps Script exec endpoint.
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://script.google.com',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) => path.replace(/^\/api/, '/macros/s/AKfycbwDbcXmMKRyzEsKHltCrpU1eq-EVyMJ4fGKPBDThvQgBDnztgpVrbbe2r6u9ZJqO1_v/exec')
+      }
+    }
+  },
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon.svg', 'icons.svg'],
+      manifest: {
+        name: 'Equity Dashboard',
+        short_name: 'Equity',
+        description: 'Premium portfolio management Progressive Web App',
+        theme_color: '#0F172A',
+        background_color: '#0F172A',
+        display: 'standalone',
+        start_url: '/equity-dashboard/',
+        icons: [
+          {
+            src: 'favicon.svg',
+            sizes: '192x192',
+            type: 'image/svg+xml',
+          },
+          {
+            src: 'favicon.svg',
+            sizes: '512x512',
+            type: 'image/svg+xml',
+          },
+          {
+            src: 'favicon.svg',
+            sizes: '512x512',
+            type: 'image/svg+xml',
+            purpose: 'any maskable',
+          },
+        ],
+      },
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        runtimeCaching: [],
+      },
+    }),
+  ],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          if (id.includes('node_modules/recharts')) {
+            return 'recharts'
+          }
+          if (id.includes('src/pages/DashboardPage')) {
+            return 'dashboard'
+          }
+          if (id.includes('src/pages/PortfolioPage')) {
+            return 'portfolio'
+          }
+          if (id.includes('src/pages/AnalyticsPage')) {
+            return 'analytics'
+          }
+          if (id.includes('src/pages/SettingsPage')) {
+            return 'settings'
+          }
+        },
+      },
+    },
+  },
+  test: {
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.js',
+    globals: true,
+  },
+})

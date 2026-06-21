@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Design System Color Palette */
+  --primary: #0F172A;        /* Deep Navy */
+  --secondary: #1E293B;      /* Slate */
+  --accent: #10B981;         /* Emerald */
+  --profit: #22C55E;         /* Green */
+  --loss: #EF4444;           /* Red */
+  --light-bg: #F8FAFC;       /* Off-White */
+  
+  /* Safe Area Insets for iPhone */
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-right: env(safe-area-inset-right);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
+  --safe-area-inset-left: env(safe-area-inset-left);
+
+  /* Typography */
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  
+  font: 16px/145% var(--sans);
+  color-scheme: light dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dark Theme (default) */
+.dark {
+  --bg: var(--primary);
+  --surface: var(--secondary);
+  --text: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --border: #334155;
+}
+
+/* Light Theme */
+.light {
+  --bg: var(--light-bg);
+  --surface: #FFFFFF;
+  --text: var(--primary);
+  --text-secondary: #64748B;
+  --border: #E2E8F0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}

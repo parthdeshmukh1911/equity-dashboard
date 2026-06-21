@@ -1,0 +1,33 @@
+{
+  "overallInvestment": {
+    "totalInvested": 500000,
+    "currentValue": 587500,
+    "totalReturn": 87500,
+    "returnPct": 17.5,
+    "todayChange": 4250,
+    "todayChangePct": 0.73
+  },
+  "assetAllocation": {
+    "stocks": 65,
+    "etfs": 20,
+    "mutualFunds": 12,
+    "cash": 3
+  },
+  "sectorAllocation": [
+    { "sector": "Banking & Finance", "pct": 28.5 },
+    { "sector": "Information Technology", "pct": 22.3 },
+    { "sector": "Energy & Oil", "pct": 15.7 },
+    { "sector": "Consumer Goods", "pct": 12.4 },
+    { "sector": "Pharmaceuticals", "pct": 8.6 },
+    { "sector": "Automobiles", "pct": 6.2 },
+    { "sector": "Telecommunications", "pct": 4.1 },
+    { "sector": "Industrials", "pct": 2.2 }
+  ],
+  "stockSectorAllocation": [
+    { "sector": "Banking & Finance", "pct": 32.8 },
+    { "sector": "Information Technology", "pct": 28.5 },
+    { "sector": "Energy & Oil", "pct": 18.2 },
+    { "sector": "Consumer Goods", "pct": 11.7 },
+    { "sector": "Pharmaceuticals", "pct": 8.8 }
+  ]
+}
