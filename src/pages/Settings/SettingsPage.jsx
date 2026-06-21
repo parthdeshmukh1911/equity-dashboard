@@ -6,6 +6,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { usePortfolio } from '../../context/PortfolioContext';
 import Button from '../../components/ui/Button';
 import Toast from '../../components/ui/Toast';
+import RefreshButton from '../../components/ui/RefreshButton';
 
 // App version — falls back to '0.0.0' if env var is not set (Requirement 7.4)
 const APP_VERSION = import.meta.env.VITE_APP_VERSION ?? '0.0.0';
@@ -90,9 +91,10 @@ export default function SettingsPage() {
         aria-label="Settings"
       >
         {/* ── Page heading ──────────────────────────────────────────────── */}
-        <h1 className="text-2xl font-bold text-[var(--text)] mb-6">
-          Settings
-        </h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-[var(--text)]">Settings</h1>
+          <RefreshButton onRefresh={handleRefresh} />
+        </div>
 
         <div className="flex flex-col gap-4">
 

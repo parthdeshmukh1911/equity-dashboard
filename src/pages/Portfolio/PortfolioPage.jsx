@@ -7,6 +7,7 @@ import { usePortfolio } from '../../context/PortfolioContext';
 import PrivacyToggle from '../../components/ui/PrivacyToggle';
 import { SlidersHorizontal, X } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
+import RefreshButton from '../../components/ui/RefreshButton';
 
 // ── Tab configuration ────────────────────────────────────────────────────────
 
@@ -53,7 +54,7 @@ export default function PortfolioPage() {
   const [filterBy, setFilterBy] = useState('all'); // all, profit, loss
 
   // Pull context state and all fetch functions from the portfolio context
-  const { state, fetchStocks, fetchEtfs, fetchMutualFunds } = usePortfolio();
+  const { state, fetchStocks, fetchEtfs, fetchMutualFunds, refreshAll } = usePortfolio();
 
   // Map fetch keys to actual functions for easy lookup
   const fetchFns = { fetchStocks, fetchEtfs, fetchMutualFunds };
@@ -164,7 +165,10 @@ export default function PortfolioPage() {
       <header className="px-4 pb-4">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-2xl font-bold text-white">Portfolio</h1>
-          <PrivacyToggle />
+          <div className="flex items-center gap-2">
+            <RefreshButton onRefresh={refreshAll} />
+            <PrivacyToggle />
+          </div>
         </div>
 
         {/* TabBar — Requirement 4.1 */}

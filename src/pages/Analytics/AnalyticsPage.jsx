@@ -5,6 +5,7 @@ import { usePortfolio } from '../../context/PortfolioContext';
 import Skeleton from '../../components/ui/Skeleton';
 import PrivacyToggle from '../../components/ui/PrivacyToggle';
 import { usePrivacy } from '../../context/PrivacyContext';
+import RefreshButton from '../../components/ui/RefreshButton';
 
 // ─── Framer Motion variants ───────────────────────────────────────────────────
 
@@ -106,7 +107,7 @@ function FullStocksList({ data, loading }) {
 // ─── AnalyticsPage ────────────────────────────────────────────────────────────
 
 export default function AnalyticsPage() {
-  const { state, fetchOverallSectorAllocation, fetchStocksAllocation } = usePortfolio();
+  const { state, fetchOverallSectorAllocation, fetchStocksAllocation, refreshAll } = usePortfolio();
 
   const { data: sectorData, loading: sectorLoading } = state.overallSectorAllocation;
   const { data: stocksData, loading: stocksLoading } = state.stocksAllocation;
@@ -127,7 +128,10 @@ export default function AnalyticsPage() {
       <div className="max-w-[428px] mx-auto">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-white">Full Allocation Lists</h1>
-          <PrivacyToggle />
+          <div className="flex items-center gap-2">
+            <RefreshButton onRefresh={refreshAll} />
+            <PrivacyToggle />
+          </div>
         </div>
 
         <motion.div

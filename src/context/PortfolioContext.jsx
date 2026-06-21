@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
+import { createContext, useContext, useReducer, useEffect, useCallback, useRef } from 'react';
 import { api } from '../services/apiClient';
 
 function emptySlice() {
@@ -25,6 +25,8 @@ const ENDPOINT_TO_KEY = {
   etfs: 'etfs',
   mutualFunds: 'mutualFunds',
 };
+
+const LIVE_REFRESH_INTERVAL_MS = 10_000;
 
 function portfolioReducer(state, action) {
   const key = ENDPOINT_TO_KEY[action.endpoint];
@@ -61,6 +63,7 @@ const PortfolioContext = createContext(null);
 
 export function PortfolioProvider({ children }) {
   const [state, dispatch] = useReducer(portfolioReducer, initialState);
+  const liveRefreshInFlight = useRef(false);
 
   const fetchEndpoint = useCallback(async (endpoint, apiFn) => {
     dispatch({ type: 'FETCH_START', endpoint });
@@ -82,6 +85,19 @@ export function PortfolioProvider({ children }) {
   const fetchStocks = useCallback(() => fetchEndpoint('stocks', api.getStocks), [fetchEndpoint]);
   const fetchEtfs = useCallback(() => fetchEndpoint('etfs', api.getEtfs), [fetchEndpoint]);
   const fetchMutualFunds = useCallback(() => fetchEndpoint('mutualFunds', api.getMutualFunds), [fetchEndpoint]);
+
+  // These are the only datasets that need continuous updates. The rest are
+  // loaded once on startup (or when the user explicitly refreshes).
+  const refreshLiveHoldings = useCallback(async () => {
+    if (liveRefreshInFlight.current) return;
+
+    liveRefreshInFlight.current = true;
+    try {
+      await Promise.all([fetchStocks(), fetchEtfs()]);
+    } finally {
+      liveRefreshInFlight.current = false;
+    }
+  }, [fetchStocks, fetchEtfs]);
 
   const refreshAll = useCallback(async () => {
     const endpoints = [
@@ -113,9 +129,23 @@ export function PortfolioProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    refreshAll();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); 
+    let intervalId;
+    let cancelled = false;
+
+    // Load the complete dashboard once, then poll only stocks and ETFs.
+    // Starting the interval after the initial request avoids overlapping the
+    // first full load with the first live refresh.
+    refreshAll().finally(() => {
+      if (!cancelled) {
+        intervalId = window.setInterval(refreshLiveHoldings, LIVE_REFRESH_INTERVAL_MS);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      if (intervalId) window.clearInterval(intervalId);
+    };
+  }, [refreshAll, refreshLiveHoldings]);
 
   const value = {
     state,
@@ -126,6 +156,7 @@ export function PortfolioProvider({ children }) {
     fetchStocks,
     fetchEtfs,
     fetchMutualFunds,
+    refreshLiveHoldings,
     refreshAll,
   };
 

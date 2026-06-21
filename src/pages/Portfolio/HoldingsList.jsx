@@ -89,7 +89,7 @@ function SkeletonCard() {
  */
 export default function HoldingsList({ holdings, loading, error, onRetry, onPress }) {
   // ── Loading state ──────────────────────────────────────────────────────────
-  if (loading) {
+  if (loading && !holdings) {
     return (
       <section aria-label="Loading holdings" className="space-y-4">
         {Array.from({ length: 4 }).map((_, i) => (
