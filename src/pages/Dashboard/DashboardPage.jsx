@@ -7,6 +7,7 @@ import AssetAllocation from './AssetAllocation';
 import OverallSectorAllocation from './OverallSectorAllocation';
 import StocksAllocation from './StocksAllocation';
 import Button from '../../components/ui/Button';
+import PrivacyToggle from '../../components/ui/PrivacyToggle';
 
 function ErrorBanner({ onRetry }) {
   return (
@@ -51,6 +52,10 @@ export default function DashboardPage() {
   return (
     <main className="flex-1 overflow-y-auto px-4 pt-6 pb-28 bg-slate-900" id="dashboard-main">
       <div className="max-w-[428px] mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-white">Dashboard</h1>
+          <PrivacyToggle />
+        </div>
         <AnimatePresence>
           {hasError && <ErrorBanner key="error-banner" onRetry={refreshAll} />}
         </AnimatePresence>

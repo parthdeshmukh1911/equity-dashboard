@@ -1,8 +1,11 @@
 import { motion } from 'framer-motion';
 import { BarChart2 } from 'lucide-react';
 import Skeleton from '../../components/ui/Skeleton';
+import { usePrivacy } from '../../context/PrivacyContext';
 
 export default function StocksAllocation({ data, loading }) {
+  const { isPrivacyMode } = usePrivacy();
+
   if (loading || !data) {
     return (
       <section className="mb-6">
@@ -34,8 +37,12 @@ export default function StocksAllocation({ data, loading }) {
                   {i + 1}
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-white">{item.name}</span>
-                  <span className="text-xs text-slate-400">{formatCurrency(item.exposure)}</span>
+                  <span className="text-sm font-semibold text-white">
+                    {isPrivacyMode ? 'Confidential Asset' : item.name}
+                  </span>
+                  <span className="text-xs text-slate-400">
+                    {isPrivacyMode ? '₹***' : formatCurrency(item.exposure)}
+                  </span>
                 </div>
               </div>
               <div className="flex flex-col items-end">

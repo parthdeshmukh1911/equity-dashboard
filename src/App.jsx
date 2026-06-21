@@ -85,6 +85,8 @@ function isStandaloneMode() {
   );
 }
 
+import { PrivacyProvider } from './context/PrivacyContext';
+
 // ---------------------------------------------------------------------------
 // App root
 // ---------------------------------------------------------------------------
@@ -103,11 +105,13 @@ export default function App() {
      * Provider order (outer → inner):
      *   ThemeProvider  — applies dark/light class to <html>
      *   PortfolioProvider — all async data state
+     *   PrivacyProvider — state for discrete masking mode
      *   BrowserRouter  — client-side routing with GitHub Pages basename
      */
     <ThemeProvider>
       <PortfolioProvider>
-        <BrowserRouter basename="/equity-dashboard/">
+        <PrivacyProvider>
+          <BrowserRouter basename="/equity-dashboard/">
           {/* "Add to Home Screen" banner — only visible in non-standalone Safari */}
           {showBanner && (
             <AddToHomeScreenBanner onDismiss={() => setShowBanner(false)} />
@@ -123,6 +127,7 @@ export default function App() {
             </Route>
           </Routes>
         </BrowserRouter>
+        </PrivacyProvider>
       </PortfolioProvider>
     </ThemeProvider>
   );

@@ -3,6 +3,7 @@ import { ChevronDownIcon } from 'lucide-react';
 import Modal from '../../components/ui/Modal';
 import Badge from '../../components/ui/Badge';
 import { formatCurrency, formatPercent } from '../../utils/formatters';
+import { usePrivacy } from '../../context/PrivacyContext';
 
 /**
  * Maps a sector/category string to a Badge color variant.
@@ -139,6 +140,8 @@ export default function DetailScreen({ holding, isOpen, onClose }) {
     avgPurchasePrice = buyPrice,
   } = holding;
 
+  const { isPrivacyMode } = usePrivacy();
+
   const returnValue = holding.returnValue !== undefined 
     ? holding.returnValue 
     : (currentValue && investedValue ? currentValue - investedValue : 0);
@@ -209,7 +212,7 @@ export default function DetailScreen({ holding, isOpen, onClose }) {
 
           {/* Company / fund name — large (Req 5.1) */}
           <h2 className="text-2xl font-bold text-white mb-1 leading-tight">
-            {name}
+            {isPrivacyMode ? 'Confidential Asset' : name}
           </h2>
 
           {/* Current value — large display (Req 5.1) */}
@@ -217,7 +220,7 @@ export default function DetailScreen({ holding, isOpen, onClose }) {
             className="text-3xl font-extrabold text-white mb-3"
             style={{ letterSpacing: '-0.02em' }}
           >
-            {formatCurrency(currentValue)}
+            {isPrivacyMode ? '₹***' : formatCurrency(currentValue)}
           </p>
 
           {/* P&L row — absolute ₹ P&L + return % + allocation % (Req 5.1) */}
@@ -225,7 +228,7 @@ export default function DetailScreen({ holding, isOpen, onClose }) {
             {/* Absolute P&L */}
             <span className="text-base font-bold" style={{ color: pnlColor }}>
               {isProfit && returnValue !== 0 ? '+' : ''}
-              {formatCurrency(returnValue)}
+              {isPrivacyMode ? '₹***' : formatCurrency(returnValue)}
             </span>
 
             {/* Return % badge */}
@@ -273,32 +276,32 @@ export default function DetailScreen({ holding, isOpen, onClose }) {
             {/* Invested value (Req 5.2) */}
             <InfoRow
               label="Invested Value"
-              value={formatCurrency(investedValue)}
+              value={isPrivacyMode ? '₹***' : formatCurrency(investedValue)}
             />
 
             {/* Current value (Req 5.2) */}
             <InfoRow
               label="Current Value"
-              value={formatCurrency(currentValue)}
+              value={isPrivacyMode ? '₹***' : formatCurrency(currentValue)}
             />
 
             {/* Return ₹ and % (Req 5.2) */}
             <InfoRow
               label="Return"
-              value={`${isProfit && returnValue !== 0 ? '+' : ''}${formatCurrency(returnValue)} (${formatPercent(returnPct)})`}
+              value={`${isProfit && returnValue !== 0 ? '+' : ''}${isPrivacyMode ? '₹***' : formatCurrency(returnValue)} (${formatPercent(returnPct)})`}
               valueStyle={{ color: pnlColor }}
             />
 
             {/* Quantity (Req 5.2) */}
             <InfoRow
               label="Quantity"
-              value={quantity != null ? String(quantity) : '—'}
+              value={quantity != null ? (isPrivacyMode ? '***' : String(quantity)) : '—'}
             />
 
             {/* Average purchase price (Req 5.2) */}
             <InfoRow
               label="Avg Purchase Price"
-              value={avgPurchasePrice != null ? formatCurrency(avgPurchasePrice) : '—'}
+              value={avgPurchasePrice != null ? (isPrivacyMode ? '₹***' : formatCurrency(avgPurchasePrice)) : '—'}
             />
 
             {/* Confidence level badge (Req 5.2) — High=green, Medium=yellow, Low=red */}

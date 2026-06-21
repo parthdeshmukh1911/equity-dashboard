@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { Layers, BarChart2 } from 'lucide-react';
 import { usePortfolio } from '../../context/PortfolioContext';
 import Skeleton from '../../components/ui/Skeleton';
+import PrivacyToggle from '../../components/ui/PrivacyToggle';
+import { usePrivacy } from '../../context/PrivacyContext';
 
 // ─── Framer Motion variants ───────────────────────────────────────────────────
 
@@ -31,6 +33,8 @@ const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currenc
 // ─── List Components ──────────────────────────────────────────────────────────
 
 function FullSectorList({ data, loading }) {
+  const { isPrivacyMode } = usePrivacy();
+
   if (loading || !data) {
     return <Skeleton width="100%" height={300} rounded="xl" />;
   }
@@ -44,7 +48,9 @@ function FullSectorList({ data, loading }) {
           <div className="flex justify-between items-end">
             <span className="text-sm font-medium text-slate-200">{item.sector}</span>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-400">{formatCurrency(item.exposure)}</span>
+              <span className="text-xs text-slate-400">
+                {isPrivacyMode ? '₹***' : formatCurrency(item.exposure)}
+              </span>
               <span className="text-sm font-bold text-white w-12 text-right">{item.allocation.toFixed(2)}%</span>
             </div>
           </div>
@@ -63,6 +69,8 @@ function FullSectorList({ data, loading }) {
 }
 
 function FullStocksList({ data, loading }) {
+  const { isPrivacyMode } = usePrivacy();
+
   if (loading || !data) {
     return <Skeleton width="100%" height={300} rounded="xl" />;
   }
@@ -78,12 +86,16 @@ function FullStocksList({ data, loading }) {
               {i + 1}
             </div>
             <div className="flex flex-col min-w-0">
-              <span className="text-sm font-semibold text-white truncate max-w-[180px]">{item.name}</span>
+              <span className="text-sm font-semibold text-white truncate max-w-[180px]">
+                {isPrivacyMode ? 'Confidential Asset' : item.name}
+              </span>
             </div>
           </div>
           <div className="flex flex-col items-end flex-shrink-0">
             <span className="text-sm font-bold text-white">{item.allocation.toFixed(2)}%</span>
-            <span className="text-xs text-slate-400">{formatCurrency(item.exposure)}</span>
+            <span className="text-xs text-slate-400">
+              {isPrivacyMode ? '₹***' : formatCurrency(item.exposure)}
+            </span>
           </div>
         </div>
       ))}
@@ -113,7 +125,10 @@ export default function AnalyticsPage() {
       style={{ paddingBottom: 'calc(5rem + env(safe-area-inset-bottom))' }}
     >
       <div className="max-w-[428px] mx-auto">
-        <h1 className="text-2xl font-bold text-white mb-6">Full Allocation Lists</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-white">Full Allocation Lists</h1>
+          <PrivacyToggle />
+        </div>
 
         <motion.div
           variants={pageVariants}

@@ -4,6 +4,9 @@ import TabBar from '../../components/navigation/TabBar';
 import HoldingsList from './HoldingsList';
 import DetailScreen from './DetailScreen';
 import { usePortfolio } from '../../context/PortfolioContext';
+import PrivacyToggle from '../../components/ui/PrivacyToggle';
+import { SlidersHorizontal, X } from 'lucide-react';
+import { formatCurrency } from '../../utils/formatters';
 
 // ── Tab configuration ────────────────────────────────────────────────────────
 
@@ -45,6 +48,9 @@ export default function PortfolioPage() {
   const [activeTab, setActiveTab] = useState(TAB_LABELS[0]);
   const [selectedHolding, setSelectedHolding] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [showSortFilter, setShowSortFilter] = useState(false);
+  const [sortBy, setSortBy] = useState('value_desc'); // value_desc, return_desc, name_asc
+  const [filterBy, setFilterBy] = useState('all'); // all, profit, loss
 
   // Pull context state and all fetch functions from the portfolio context
   const { state, fetchStocks, fetchEtfs, fetchMutualFunds } = usePortfolio();
@@ -104,9 +110,34 @@ export default function PortfolioPage() {
   const activeConfig = TAB_CONFIG.find((t) => t.label === activeTab);
   const activeSlice  = activeConfig ? state[activeConfig.stateKey] : null;
 
-  const holdings = activeSlice?.data  ?? null;
+  let holdings = activeSlice?.data  ?? null;
   const loading  = activeSlice?.loading ?? false;
   const error    = activeSlice?.error  ?? null;
+
+  // Apply Sort and Filter logic
+  if (holdings && Array.isArray(holdings)) {
+    // 1. Filter
+    if (filterBy === 'profit') {
+      holdings = holdings.filter(h => (h.pnl || h.returnPct) >= 0);
+    } else if (filterBy === 'loss') {
+      holdings = holdings.filter(h => (h.pnl || h.returnPct) < 0);
+    }
+
+    // 2. Sort
+    holdings = [...holdings].sort((a, b) => {
+      const aVal = a.currentValue || 0;
+      const bVal = b.currentValue || 0;
+      const aRet = a.pnl || a.returnPct || 0;
+      const bRet = b.pnl || b.returnPct || 0;
+      const aName = a.name || '';
+      const bName = b.name || '';
+
+      if (sortBy === 'value_desc') return bVal - aVal;
+      if (sortBy === 'return_desc') return bRet - aRet;
+      if (sortBy === 'name_asc') return aName.localeCompare(bName);
+      return 0;
+    });
+  }
 
   // Retry handler — re-fetch the active tab's endpoint
   function handleRetry() {
@@ -131,7 +162,10 @@ export default function PortfolioPage() {
     >
       {/* ── Page header ─────────────────────────────────────────────────── */}
       <header className="px-4 pb-4">
-        <h1 className="text-2xl font-bold text-white mb-4">Portfolio</h1>
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-2xl font-bold text-white">Portfolio</h1>
+          <PrivacyToggle />
+        </div>
 
         {/* TabBar — Requirement 4.1 */}
         <TabBar
@@ -139,6 +173,65 @@ export default function PortfolioPage() {
           activeTab={activeTab}
           onChange={handleTabChange}
         />
+
+        <div className="flex items-center justify-end mt-4">
+          <button
+            onClick={() => setShowSortFilter(!showSortFilter)}
+            className="flex items-center gap-2 text-sm font-medium text-slate-300 bg-slate-800/50 border border-slate-700 px-3 py-1.5 rounded-full hover:bg-slate-800 transition-colors"
+          >
+            <SlidersHorizontal size={14} />
+            Sort & Filter
+          </button>
+        </div>
+
+        {/* Expandable Sort/Filter Panel */}
+        {showSortFilter && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mt-3 bg-slate-800/80 border border-slate-700 p-4 rounded-2xl"
+          >
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-sm font-semibold text-white">View Options</h3>
+              <button onClick={() => setShowSortFilter(false)} className="text-slate-400 hover:text-white">
+                <X size={16} />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold text-slate-400 uppercase mb-2 block">Sort By</label>
+                <div className="flex gap-2 flex-wrap">
+                  {['value_desc', 'return_desc', 'name_asc'].map(option => (
+                    <button
+                      key={option}
+                      onClick={() => setSortBy(option)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium border ${sortBy === option ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300' : 'bg-transparent border-slate-600 text-slate-300'}`}
+                    >
+                      {option === 'value_desc' ? 'Value' : option === 'return_desc' ? 'Return' : 'Name'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-400 uppercase mb-2 block">Filter</label>
+                <div className="flex gap-2 flex-wrap">
+                  {['all', 'profit', 'loss'].map(option => (
+                    <button
+                      key={option}
+                      onClick={() => setFilterBy(option)}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium border ${filterBy === option ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300' : 'bg-transparent border-slate-600 text-slate-300'}`}
+                    >
+                      {option === 'all' ? 'All' : option === 'profit' ? 'Profit' : 'Loss'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </header>
 
       {/* ── Holdings list ────────────────────────────────────────────────── */}

@@ -1,8 +1,11 @@
 import { motion } from 'framer-motion';
 import { Layers } from 'lucide-react';
 import Skeleton from '../../components/ui/Skeleton';
+import { usePrivacy } from '../../context/PrivacyContext';
 
 export default function AssetAllocation({ data, loading }) {
+  const { isPrivacyMode } = usePrivacy();
+
   if (loading || !data) {
     return (
       <section className="mb-6">
@@ -40,7 +43,9 @@ export default function AssetAllocation({ data, loading }) {
               <div className="flex justify-between items-end">
                 <span className="text-sm font-medium text-slate-200">{item.asset}</span>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-slate-400">{formatCurrency(item.allocation)}</span>
+                  <span className="text-xs text-slate-400">
+                    {isPrivacyMode ? '₹***' : formatCurrency(item.allocation)}
+                  </span>
                   <span className="text-sm font-bold text-white w-12 text-right">{percentage.toFixed(1)}%</span>
                 </div>
               </div>

@@ -1,5 +1,6 @@
 import Badge from '../ui/Badge';
 import { formatCurrency, formatPercent } from '../../utils/formatters';
+import { usePrivacy } from '../../context/PrivacyContext';
 
 /**
  * Maps a sector/category string to a Badge color variant.
@@ -72,6 +73,8 @@ export default function HoldingCard({ holding, variant = 'full', onPress }) {
     confidenceLevel = confidence,
   } = holding;
 
+  const { isPrivacyMode } = usePrivacy();
+
   // Calculate absolute return value
   const returnValue = holding.returnValue !== undefined 
     ? holding.returnValue 
@@ -123,13 +126,13 @@ export default function HoldingCard({ holding, variant = 'full', onPress }) {
       >
         {/* Name */}
         <span className="flex-1 text-sm font-semibold text-white truncate">
-          {name}
+          {isPrivacyMode ? 'Confidential Asset' : name}
         </span>
 
         {/* Current value + return % */}
         <div className="flex flex-col items-end flex-shrink-0 gap-0.5">
           <span className="text-sm font-bold text-white">
-            {formatCurrency(currentValue)}
+            {isPrivacyMode ? '₹***' : formatCurrency(currentValue)}
           </span>
           <span className="text-xs font-medium" style={{ color: returnColor }}>
             {formatPercent(returnPct)}
@@ -160,7 +163,7 @@ export default function HoldingCard({ holding, variant = 'full', onPress }) {
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex flex-col gap-1 min-w-0">
           <span className="text-sm font-bold text-white leading-tight truncate">
-            {name}
+            {isPrivacyMode ? 'Confidential Asset' : name}
           </span>
           {(sector || category) && (
             <Badge
@@ -193,7 +196,7 @@ export default function HoldingCard({ holding, variant = 'full', onPress }) {
             Qty
           </span>
           <span className="text-sm font-semibold text-white">
-            {quantity}
+            {isPrivacyMode ? '***' : quantity}
           </span>
         </div>
 
@@ -213,7 +216,7 @@ export default function HoldingCard({ holding, variant = 'full', onPress }) {
             Invested
           </span>
           <span className="text-sm font-semibold" style={{ color: '#94A3B8' }}>
-            {formatCurrency(investedValue)}
+            {isPrivacyMode ? '₹***' : formatCurrency(investedValue)}
           </span>
         </div>
 
@@ -223,7 +226,7 @@ export default function HoldingCard({ holding, variant = 'full', onPress }) {
             Current
           </span>
           <span className="text-sm font-bold text-white">
-            {formatCurrency(currentValue)}
+            {isPrivacyMode ? '₹***' : formatCurrency(currentValue)}
           </span>
         </div>
       </div>
@@ -242,7 +245,7 @@ export default function HoldingCard({ holding, variant = 'full', onPress }) {
           </span>
           <span className="text-sm font-bold" style={{ color: returnColor }}>
             {isProfit && returnValue !== 0 ? '+' : ''}
-            {formatCurrency(returnValue)}
+            {isPrivacyMode ? '₹***' : formatCurrency(returnValue)}
           </span>
         </div>
 
