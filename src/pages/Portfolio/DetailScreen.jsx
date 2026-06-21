@@ -126,14 +126,22 @@ export default function DetailScreen({ holding, isOpen, onClose }) {
     sector,
     category,
     quantity,
-    investedValue,
+    invested,
+    investedValue = invested,
     currentValue,
-    returnValue,
-    returnPct,
-    portfolioWeight,
-    confidenceLevel,
-    avgPurchasePrice,
+    pnl,
+    returnPct = pnl,
+    weightage,
+    portfolioWeight = weightage,
+    confidence,
+    confidenceLevel = confidence,
+    buyPrice,
+    avgPurchasePrice = buyPrice,
   } = holding;
+
+  const returnValue = holding.returnValue !== undefined 
+    ? holding.returnValue 
+    : (currentValue && investedValue ? currentValue - investedValue : 0);
 
   const isProfit = returnValue >= 0;
   const pnlColor = isProfit ? '#22C55E' : '#EF4444';
