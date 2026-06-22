@@ -7,7 +7,7 @@ import { usePrivacy } from '../../context/PrivacyContext';
 export default function OverallInvestments({ data, loading }) {
   const { isPrivacyMode } = usePrivacy();
 
-  if (loading || !data) {
+  if (loading && !data) {
     return (
       <section className="mb-6">
         <Skeleton width="100%" height={220} rounded="xl" />
@@ -67,7 +67,10 @@ export default function OverallInvestments({ data, loading }) {
                 </div>
                 <div className="flex flex-col items-end">
                   <span className="text-white text-sm font-medium">{isPrivacyMode ? '₹***' : formatCurrency(item.current)}</span>
-                  <span className={`text-xs font-medium ${itemIsProfit ? 'text-emerald-400' : 'text-red-400'}`}>
+                  <span
+                    className="text-xs font-medium"
+                    style={{ color: itemIsProfit ? '#22C55E' : '#EF4444' }}
+                  >
                     {formatPercent(item.returnPercentage).replace(/^\+/, '')}
                   </span>
                 </div>

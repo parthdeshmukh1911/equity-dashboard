@@ -25,6 +25,13 @@ const TAB_CONFIG = [
 
 const TAB_LABELS = TAB_CONFIG.map((t) => t.label);
 
+const SORT_OPTIONS = [
+  { value: 'currentValue', label: 'Current Value' },
+  { value: 'investedValue', label: 'Invested Value' },
+  { value: 'weight', label: 'Weight' },
+  { value: 'name', label: 'Name' },
+];
+
 // ── Page entry animation ─────────────────────────────────────────────────────
 
 const pageVariants = {
@@ -52,7 +59,8 @@ export default function PortfolioPage() {
   const [selectedHolding, setSelectedHolding] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
   const [showSortFilter, setShowSortFilter] = useState(false);
-  const [sortBy, setSortBy] = useState('value_desc'); // value_desc, return_desc, name_asc
+  const [sortBy, setSortBy] = useState('currentValue');
+  const [sortDirection, setSortDirection] = useState('desc');
   const [filterBy, setFilterBy] = useState('all'); // all, profit, loss
 
   // Pull context state and all fetch functions from the portfolio context
@@ -121,24 +129,26 @@ export default function PortfolioPage() {
   if (holdings && Array.isArray(holdings)) {
     // 1. Filter
     if (filterBy === 'profit') {
-      holdings = holdings.filter(h => (h.pnl || h.returnPct) >= 0);
+      holdings = holdings.filter(h => (h.pnl ?? h.returnPct ?? 0) >= 0);
     } else if (filterBy === 'loss') {
-      holdings = holdings.filter(h => (h.pnl || h.returnPct) < 0);
+      holdings = holdings.filter(h => (h.pnl ?? h.returnPct ?? 0) < 0);
     }
 
     // 2. Sort
     holdings = [...holdings].sort((a, b) => {
-      const aVal = a.currentValue || 0;
-      const bVal = b.currentValue || 0;
-      const aRet = a.pnl || a.returnPct || 0;
-      const bRet = b.pnl || b.returnPct || 0;
-      const aName = a.name || '';
-      const bName = b.name || '';
+      let comparison;
 
-      if (sortBy === 'value_desc') return bVal - aVal;
-      if (sortBy === 'return_desc') return bRet - aRet;
-      if (sortBy === 'name_asc') return aName.localeCompare(bName);
-      return 0;
+      if (sortBy === 'name') {
+        comparison = (a.name ?? '').localeCompare(b.name ?? '');
+      } else if (sortBy === 'investedValue') {
+        comparison = (a.investedValue ?? a.invested ?? 0) - (b.investedValue ?? b.invested ?? 0);
+      } else if (sortBy === 'weight') {
+        comparison = (a.portfolioWeight ?? a.weightage ?? 0) - (b.portfolioWeight ?? b.weightage ?? 0);
+      } else {
+        comparison = (a.currentValue ?? 0) - (b.currentValue ?? 0);
+      }
+
+      return sortDirection === 'asc' ? comparison : -comparison;
     });
   }
 
@@ -210,15 +220,39 @@ export default function PortfolioPage() {
               <div>
                 <label className="text-xs font-semibold text-slate-400 uppercase mb-2 block">Sort By</label>
                 <div className="flex gap-2 flex-wrap">
-                  {['value_desc', 'return_desc', 'name_asc'].map(option => (
+                  {SORT_OPTIONS.map(({ value, label }) => (
                     <button
-                      key={option}
-                      onClick={() => setSortBy(option)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium border ${sortBy === option ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300' : 'bg-transparent border-slate-600 text-slate-300'}`}
+                      key={value}
+                      onClick={() => setSortBy(value)}
+                      aria-pressed={sortBy === value}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium border ${sortBy === value ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300' : 'bg-transparent border-slate-600 text-slate-300'}`}
                     >
-                      {option === 'value_desc' ? 'Value' : option === 'return_desc' ? 'Return' : 'Name'}
+                      {label}
                     </button>
                   ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-400 uppercase mb-2 block">Order</label>
+                <div className="flex gap-2 flex-wrap">
+                  {['desc', 'asc'].map(direction => {
+                    const isDescending = direction === 'desc';
+                    const label = sortBy === 'name'
+                      ? (isDescending ? 'Z → A' : 'A → Z')
+                      : (isDescending ? 'High → Low' : 'Low → High');
+
+                    return (
+                      <button
+                        key={direction}
+                        onClick={() => setSortDirection(direction)}
+                        aria-pressed={sortDirection === direction}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium border ${sortDirection === direction ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300' : 'bg-transparent border-slate-600 text-slate-300'}`}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

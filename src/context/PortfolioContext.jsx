@@ -87,8 +87,8 @@ export function PortfolioProvider({ children }) {
   const fetchEtfs = useCallback(() => fetchEndpoint('etfs', api.getEtfs), [fetchEndpoint]);
   const fetchMutualFunds = useCallback(() => fetchEndpoint('mutualFunds', api.getMutualFunds), [fetchEndpoint]);
 
-  // These are the only datasets that need continuous updates. The rest are
-  // loaded once on startup (or when the user explicitly refreshes).
+  // These market-sensitive datasets refresh continuously. The rest load once
+  // on startup (or when the user explicitly refreshes).
   const refreshLiveHoldings = useCallback(async () => {
     // Automatic polling is limited to regular NSE market hours in IST.
     if (!isIndianMarketOpen()) return;
@@ -96,11 +96,11 @@ export function PortfolioProvider({ children }) {
 
     liveRefreshInFlight.current = true;
     try {
-      await Promise.all([fetchStocks(), fetchEtfs()]);
+      await Promise.all([fetchOverallInvestments(), fetchStocks(), fetchEtfs()]);
     } finally {
       liveRefreshInFlight.current = false;
     }
-  }, [fetchStocks, fetchEtfs]);
+  }, [fetchOverallInvestments, fetchStocks, fetchEtfs]);
 
   const refreshAll = useCallback(async () => {
     const endpoints = [
