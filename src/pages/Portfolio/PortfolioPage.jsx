@@ -1,12 +1,21 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import TabBar from '../../components/navigation/TabBar';
 import HoldingsList from './HoldingsList';
 import DetailScreen from './DetailScreen';
 import { usePortfolio } from '../../context/PortfolioContext';
 import PrivacyToggle from '../../components/ui/PrivacyToggle';
-import { SlidersHorizontal, X } from 'lucide-react';
-import { formatCurrency } from '../../utils/formatters';
+import {
+  ArrowDownAZ,
+  ArrowUpDown,
+  Banknote,
+  ListFilter,
+  Scale,
+  SlidersHorizontal,
+  TrendingDown,
+  TrendingUp,
+  X,
+} from 'lucide-react';
 import RefreshButton from '../../components/ui/RefreshButton';
 import usePageScrollRestoration from '../../hooks/usePageScrollRestoration';
 
@@ -26,10 +35,11 @@ const TAB_CONFIG = [
 const TAB_LABELS = TAB_CONFIG.map((t) => t.label);
 
 const SORT_OPTIONS = [
-  { value: 'currentValue', label: 'Current Value' },
-  { value: 'investedValue', label: 'Invested Value' },
-  { value: 'weight', label: 'Weight' },
-  { value: 'name', label: 'Name' },
+  { value: 'currentValue', label: 'Current Value', icon: Banknote },
+  { value: 'investedValue', label: 'Invested Value', icon: Scale },
+  { value: 'return', label: 'Returns', icon: TrendingUp },
+  { value: 'weight', label: 'Weight', icon: ArrowUpDown },
+  { value: 'name', label: 'Name', icon: ArrowDownAZ },
 ];
 
 // ── Page entry animation ─────────────────────────────────────────────────────
@@ -62,6 +72,7 @@ export default function PortfolioPage() {
   const [sortBy, setSortBy] = useState('currentValue');
   const [sortDirection, setSortDirection] = useState('desc');
   const [filterBy, setFilterBy] = useState('all'); // all, profit, loss
+  const swipeStart = useRef(null);
 
   // Pull context state and all fetch functions from the portfolio context
   const { state, fetchStocks, fetchEtfs, fetchMutualFunds, refreshAll } = usePortfolio();
@@ -102,6 +113,34 @@ export default function PortfolioPage() {
     ensureTabData(tab);
   }
 
+  function handleTouchStart(event) {
+    const touch = event.touches[0];
+    swipeStart.current = { x: touch.clientX, y: touch.clientY };
+  }
+
+  function handleTouchEnd(event) {
+    const start = swipeStart.current;
+    swipeStart.current = null;
+    if (!start) return;
+
+    const touch = event.changedTouches[0];
+    const horizontalDistance = touch.clientX - start.x;
+    const verticalDistance = touch.clientY - start.y;
+
+    // Only handle deliberate horizontal swipes so normal vertical scrolling
+    // remains untouched.
+    if (Math.abs(horizontalDistance) < 56 || Math.abs(horizontalDistance) <= Math.abs(verticalDistance)) {
+      return;
+    }
+
+    const currentIndex = TAB_LABELS.indexOf(activeTab);
+    const nextIndex = horizontalDistance < 0
+      ? Math.min(currentIndex + 1, TAB_LABELS.length - 1)
+      : Math.max(currentIndex - 1, 0);
+
+    if (nextIndex !== currentIndex) handleTabChange(TAB_LABELS[nextIndex]);
+  }
+
   // ── Detail screen handlers ─────────────────────────────────────────────────
 
   function handleHoldingPress(holding) {
@@ -140,6 +179,8 @@ export default function PortfolioPage() {
 
       if (sortBy === 'name') {
         comparison = (a.name ?? '').localeCompare(b.name ?? '');
+      } else if (sortBy === 'return') {
+        comparison = (a.pnl ?? a.returnPct ?? 0) - (b.pnl ?? b.returnPct ?? 0);
       } else if (sortBy === 'investedValue') {
         comparison = (a.investedValue ?? a.invested ?? 0) - (b.investedValue ?? b.invested ?? 0);
       } else if (sortBy === 'weight') {
@@ -173,6 +214,9 @@ export default function PortfolioPage() {
       initial="hidden"
       animate="visible"
       aria-label="Portfolio page"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={() => { swipeStart.current = null; }}
     >
       {/* ── Page header ─────────────────────────────────────────────────── */}
       <header className="px-4 pb-4">
@@ -191,13 +235,19 @@ export default function PortfolioPage() {
           onChange={handleTabChange}
         />
 
+        <p className="mt-2 px-1 text-xs text-slate-500">
+          Swipe left or right to switch asset types
+        </p>
+
         <div className="flex items-center justify-end mt-4">
           <button
             onClick={() => setShowSortFilter(!showSortFilter)}
-            className="flex items-center gap-2 text-sm font-medium text-slate-300 bg-slate-800/50 border border-slate-700 px-3 py-1.5 rounded-full hover:bg-slate-800 transition-colors"
+            aria-expanded={showSortFilter}
+            aria-controls="asset-view-controls"
+            className="flex items-center gap-2 rounded-xl border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm font-medium text-slate-200 shadow-sm transition-colors hover:border-emerald-500/50 hover:bg-slate-800"
           >
             <SlidersHorizontal size={14} />
-            Sort & Filter
+            View controls
           </button>
         </div>
 
@@ -207,26 +257,38 @@ export default function PortfolioPage() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mt-3 bg-slate-800/80 border border-slate-700 p-4 rounded-2xl"
+            id="asset-view-controls"
+            className="mt-3 rounded-2xl border border-slate-700/80 bg-gradient-to-br from-slate-800 to-slate-900 p-4 shadow-xl"
           >
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-semibold text-white">View Options</h3>
-              <button onClick={() => setShowSortFilter(false)} className="text-slate-400 hover:text-white">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-400/10 text-emerald-400">
+                  <ListFilter size={16} aria-hidden="true" />
+                </span>
+                <h3 className="text-sm font-semibold text-white">View controls</h3>
+              </div>
+              <button
+                type="button"
+                aria-label="Close view controls"
+                onClick={() => setShowSortFilter(false)}
+                className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-700 hover:text-white"
+              >
                 <X size={16} />
               </button>
             </div>
             
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div>
-                <label className="text-xs font-semibold text-slate-400 uppercase mb-2 block">Sort By</label>
-                <div className="flex gap-2 flex-wrap">
-                  {SORT_OPTIONS.map(({ value, label }) => (
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Sort by</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {SORT_OPTIONS.map(({ value, label, icon: Icon }) => (
                     <button
                       key={value}
                       onClick={() => setSortBy(value)}
                       aria-pressed={sortBy === value}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium border ${sortBy === value ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300' : 'bg-transparent border-slate-600 text-slate-300'}`}
+                      className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-left text-xs font-medium transition-colors ${sortBy === value ? 'border-emerald-400/70 bg-emerald-400/10 text-emerald-300' : 'border-slate-700 bg-slate-800/50 text-slate-300 hover:border-slate-600'}`}
                     >
+                      <Icon size={15} aria-hidden="true" />
                       {label}
                     </button>
                   ))}
@@ -234,8 +296,8 @@ export default function PortfolioPage() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-400 uppercase mb-2 block">Order</label>
-                <div className="flex gap-2 flex-wrap">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Order</p>
+                <div className="grid grid-cols-2 rounded-xl border border-slate-700 bg-slate-900/50 p-1">
                   {['desc', 'asc'].map(direction => {
                     const isDescending = direction === 'desc';
                     const label = sortBy === 'name'
@@ -247,7 +309,7 @@ export default function PortfolioPage() {
                         key={direction}
                         onClick={() => setSortDirection(direction)}
                         aria-pressed={sortDirection === direction}
-                        className={`px-3 py-1.5 rounded-full text-xs font-medium border ${sortDirection === direction ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300' : 'bg-transparent border-slate-600 text-slate-300'}`}
+                        className={`rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${sortDirection === direction ? 'bg-emerald-400 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'}`}
                       >
                         {label}
                       </button>
@@ -257,15 +319,21 @@ export default function PortfolioPage() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-slate-400 uppercase mb-2 block">Filter</label>
-                <div className="flex gap-2 flex-wrap">
-                  {['all', 'profit', 'loss'].map(option => (
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Filter returns</p>
+                <div className="flex gap-2">
+                  {[
+                    { value: 'all', label: 'All' },
+                    { value: 'profit', label: 'Profit', icon: TrendingUp },
+                    { value: 'loss', label: 'Loss', icon: TrendingDown },
+                  ].map(({ value, label, icon: Icon }) => (
                     <button
-                      key={option}
-                      onClick={() => setFilterBy(option)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium border ${filterBy === option ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300' : 'bg-transparent border-slate-600 text-slate-300'}`}
+                      key={value}
+                      onClick={() => setFilterBy(value)}
+                      aria-pressed={filterBy === value}
+                      className={`flex flex-1 items-center justify-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-medium transition-colors ${filterBy === value ? 'border-emerald-400/70 bg-emerald-400/10 text-emerald-300' : 'border-slate-700 text-slate-300 hover:border-slate-600'}`}
                     >
-                      {option === 'all' ? 'All' : option === 'profit' ? 'Profit' : 'Loss'}
+                      {Icon && <Icon size={14} aria-hidden="true" />}
+                      {label}
                     </button>
                   ))}
                 </div>

@@ -135,7 +135,7 @@ export function PortfolioProvider({ children }) {
     let intervalId;
     let cancelled = false;
 
-    // Load the complete dashboard once, then poll only stocks and ETFs.
+    // Load the complete dashboard once, then poll live market-sensitive data.
     // Starting the interval after the initial request avoids overlapping the
     // first full load with the first live refresh.
     refreshAll().finally(() => {
