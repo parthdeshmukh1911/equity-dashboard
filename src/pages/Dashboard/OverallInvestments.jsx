@@ -68,7 +68,7 @@ export default function OverallInvestments({ data, loading }) {
                 <div className="flex flex-col items-end">
                   <span className="text-white text-sm font-medium">{isPrivacyMode ? '₹***' : formatCurrency(item.current)}</span>
                   <span className={`text-xs font-medium ${itemIsProfit ? 'text-emerald-400' : 'text-red-400'}`}>
-                    {itemIsProfit ? '+' : ''}{formatPercent(item.returnPercentage)}
+                    {formatPercent(item.returnPercentage).replace(/^\+/, '')}
                   </span>
                 </div>
               </div>

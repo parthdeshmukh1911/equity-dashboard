@@ -23,13 +23,22 @@ const TIMEOUT_MS = 10_000;
  * @throws {ApiError} Structured error object with endpoint, status, and message
  */
 async function apiFetch(action) {
-  const url = `${BASE_URL}?action=${action}`;
+  // Apps Script responses may be cached by the browser or an intermediary when
+  // the URL stays the same. A timestamp makes each live refresh a distinct
+  // request, while cache: 'no-store' prevents the browser from reusing data.
+  const separator = BASE_URL.includes('?') ? '&' : '?';
+  const url = `${BASE_URL}${separator}action=${encodeURIComponent(action)}&_=${Date.now()}`;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
   try {
     // Ensure CORS mode and follow redirects explicitly
-    const res = await fetch(url, { signal: controller.signal, mode: 'cors', redirect: 'follow' });
+    const res = await fetch(url, {
+      signal: controller.signal,
+      mode: 'cors',
+      redirect: 'follow',
+      cache: 'no-store',
+    });
     clearTimeout(timer);
 
     // If the response is JSON (even after redirects), parse and return it.

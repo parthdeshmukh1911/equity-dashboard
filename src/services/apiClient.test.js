@@ -32,10 +32,12 @@ describe('API Client', () => {
       const { api } = await import('./apiClient.js');
       await api.getOverallInvestments();
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        'https://script.google.com/test/exec?action=overallInvestments',
-        expect.objectContaining({ signal: expect.any(AbortSignal) })
-      );
+      const [url, options] = fetchMock.mock.calls[0];
+      expect(url).toMatch(/^https:\/\/script\.google\.com\/test\/exec\?action=overallInvestments&_=/);
+      expect(options).toEqual(expect.objectContaining({
+        signal: expect.any(AbortSignal),
+        cache: 'no-store',
+      }));
     });
 
     it('should construct correct URL for assetAllocation action', async () => {
@@ -48,10 +50,12 @@ describe('API Client', () => {
       const { api } = await import('./apiClient.js');
       await api.getAssetAllocation();
 
-      expect(fetchMock).toHaveBeenCalledWith(
-        'https://script.google.com/test/exec?action=assetAllocation',
-        expect.objectContaining({ signal: expect.any(AbortSignal) })
-      );
+      const [url, options] = fetchMock.mock.calls[0];
+      expect(url).toMatch(/^https:\/\/script\.google\.com\/test\/exec\?action=assetAllocation&_=/);
+      expect(options).toEqual(expect.objectContaining({
+        signal: expect.any(AbortSignal),
+        cache: 'no-store',
+      }));
     });
   });
 

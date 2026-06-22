@@ -157,7 +157,10 @@ export default function HoldingsList({ holdings, loading, error, onRetry, onPres
       animate="visible"
     >
       {holdings.map((holding) => (
-        <motion.div key={holding.id} variants={itemVariants}>
+        <motion.div
+          key={holding.id ?? holding.symbol ?? holding.srNo ?? holding.name}
+          variants={itemVariants}
+        >
           <HoldingCard
             holding={holding}
             variant="full"
