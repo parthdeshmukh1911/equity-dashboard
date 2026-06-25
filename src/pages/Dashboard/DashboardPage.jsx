@@ -44,13 +44,28 @@ function ErrorBanner({ onRetry }) {
 }
 
 export default function DashboardPage() {
-  const { state, refreshAll } = usePortfolio();
+  const {
+    state,
+    fetchOverallInvestments,
+    fetchAssetAllocation,
+    fetchOverallSectorAllocation,
+    fetchStocksAllocation,
+  } = usePortfolio();
   const scrollRef = usePageScrollRestoration('dashboard');
 
   const { overallInvestments, assetAllocation, overallSectorAllocation, stocksAllocation } = state;
 
   const isLoading = overallInvestments.loading || assetAllocation.loading || overallSectorAllocation.loading || stocksAllocation.loading;
   const hasError = !!overallInvestments.error || !!assetAllocation.error || !!overallSectorAllocation.error || !!stocksAllocation.error;
+
+  async function handleDashboardRefresh() {
+    await Promise.allSettled([
+      fetchOverallInvestments(),
+      fetchAssetAllocation(),
+      fetchOverallSectorAllocation(),
+      fetchStocksAllocation(),
+    ]);
+  }
 
   return (
     <main
@@ -63,12 +78,12 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-white">Dashboard</h1>
           <div className="flex items-center gap-2">
-            <RefreshButton onRefresh={refreshAll} />
+            <RefreshButton onRefresh={handleDashboardRefresh} />
             <PrivacyToggle />
           </div>
         </div>
         <AnimatePresence>
-          {hasError && <ErrorBanner key="error-banner" onRetry={refreshAll} />}
+          {hasError && <ErrorBanner key="error-banner" onRetry={handleDashboardRefresh} />}
         </AnimatePresence>
 
         <motion.div

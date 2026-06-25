@@ -235,10 +235,6 @@ export default function PortfolioPage() {
           onChange={handleTabChange}
         />
 
-        <p className="mt-2 px-1 text-xs text-slate-500">
-          Swipe left or right to switch asset types
-        </p>
-
         <div className="flex items-center justify-end mt-4">
           <button
             onClick={() => setShowSortFilter(!showSortFilter)}
