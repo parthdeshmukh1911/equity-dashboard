@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { TrendingUp } from 'lucide-react';
+import equityDashboardIcon from '../assets/equity dashboard icon.jpeg';
 
 /**
  * SplashScreen — animated launch screen shown on first app load.
  *
- * Displays the app name and a TrendingUp icon animation for 1.5 seconds,
+ * Displays the app name and icon animation for 1.5 seconds,
  * then animates out with a fade + scale exit before calling `onComplete`.
  *
  * @param {Object}   props
@@ -36,19 +36,20 @@ const SplashScreen = ({ onComplete }) => {
             initial={{ scale: 0.5, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.4, ease: 'easeOut', delay: 0.05 }}
-            className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-[#10B981]/15"
+            className="mb-6 flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-[#10B981]/15 shadow-2xl shadow-emerald-950/30"
             aria-hidden="true"
           >
             <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: [0.8, 1.1, 1] }}
               transition={{ duration: 0.5, ease: 'easeOut', delay: 0.1 }}
+              className="h-full w-full"
             >
-              <TrendingUp
-                size={44}
-                strokeWidth={2}
-                color="#10B981"
-                aria-hidden="true"
+              <img
+                src={equityDashboardIcon}
+                alt=""
+                className="h-full w-full object-cover"
+                draggable="false"
               />
             </motion.div>
           </motion.div>
