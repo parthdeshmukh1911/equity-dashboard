@@ -255,11 +255,26 @@ const realApi = {
 
   buyMore: (payload) =>
     apiPost({
-
       action: "buyMore",
-
       ...payload
+    }),
 
+  updateHolding: (payload) =>
+    apiPost({
+      action: "updateHolding",
+      ...payload
+    }),
+
+  sellHolding: (payload) =>
+    apiPost({
+      action: "sellHolding",
+      ...payload
+    }),
+
+  addHolding: (payload) =>
+    apiPost({
+      action: "addHolding",
+      ...payload
     })
 
 };

@@ -7,24 +7,46 @@ import { usePrivacy } from '../../context/PrivacyContext';
  * Stocks tend toward blue/indigo, sectors vary, ETFs are amber, MFs are cyan.
  */
 const SECTOR_COLOR_MAP = {
-  Technology: 'blue',
-  'Financial Services': 'emerald',
-  Healthcare: 'teal',
-  Energy: 'orange',
-  Consumer: 'purple',
-  Automobile: 'yellow',
-  Infrastructure: 'gray',
-  Pharma: 'pink',
-  FMCG: 'orange',
-  Metals: 'gray',
-  Telecom: 'blue',
-  Realty: 'yellow',
-  Media: 'pink',
-  Utilities: 'teal',
-  ETF: 'orange',
-  'Mutual Fund': 'teal',
-  Debt: 'gray',
-  Hybrid: 'purple',
+  "Financial Services": "#3B82F6",                 // Blue
+  "Technology": "#6366F1",                         // Indigo
+  "Energy": "#F59E0B",                             // Amber
+  "Consumer Cyclical": "#F97316",                  // Orange
+  "Healthcare": "#EF4444",                         // Red
+  "Housing Finance": "#06B6D4",                    // Cyan
+  "Communication Services": "#0EA5E9",             // Sky
+  "Utilities": "#14B8A6",                          // Teal
+  "Real Estate": "#84CC16",                        // Lime
+  "Consumer Defensive": "#22C55E",                 // Green
+  "Industrials": "#EAB308",                        // Yellow
+  "Renewable Energy": "#10B981",                   // Green Emerald
+  "Digital Advertising & Technology": "#8B5CF6",  // Violet
+  "Basic Materials": "#78716C",                    // Stone
+  "Alcoholic Beverages": "#EC4899",                // Pink
+  "Travel & Visa Services": "#A855F7",             // Purple
+  "Industrial Machinery": "#64748B",               // Slate
+  "Oil, Gas & Consumable Fuels": "#B45309",        // Dark Amber
+  "Automobile and Auto Components": "#0891B2",     // Dark Cyan
+  "Power Financing": "#1D4ED8",                    // Royal Blue
+  "Capital Goods": "#CA8A04",                      // Golden Yellow
+  "Fast Moving Consumer Goods": "#65A30D",         // Olive Green
+  "Construction": "#D97706",                       // Construction Orange
+  "Telecommunication": "#0284C7",                  // Deep Sky
+  "Metals & Mining": "#71717A",                    // Zinc
+  "Consumer Services": "#9333EA",                  // Purple
+  "Consumer Durables": "#2563EB",                  // Blue
+  "Power": "#0F766E",                              // Dark Teal
+  "Services": "#DB2777",                           // Deep Pink
+  "Chemicals": "#7C3AED",                          // Purple Violet
+  "Construction Materials": "#A16207",             // Brown Gold
+  "Realty": "#65A30D",                             // Lime Green
+  "Media, Entertainment & Publication": "#C026D3",// Fuchsia
+  "Textiles": "#E11D48",                           // Rose
+  "Diversified": "#6B7280",                        // Gray
+
+  "ETF": "#FACC15",                               // Bright Yellow
+  "Mutual Fund": "#06B6D4",                        // Cyan
+  "Debt": "#475569",                              // Slate
+  "Hybrid": "#7C3AED"                             // Violet
 };
 
 function getSectorColor(sector) {

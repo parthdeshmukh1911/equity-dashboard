@@ -38,7 +38,7 @@ export default function OverallInvestments({ data, loading }) {
           </div>
           
           <div className="flex items-center gap-2 mt-2">
-            <div className={`flex items-center gap-1 px-2 py-1 rounded-md text-sm font-medium ${isProfit ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
+            <div className={`flex items-center gap-1 px-2 py-1 rounded-md text-sm font-medium ${isProfit ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
               {isProfit ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
               <span>{isPrivacyMode ? '***' : formatCurrency(Math.abs(total.profit))} ({formatPercent(total.returnPercentage)})</span>
             </div>
@@ -71,7 +71,7 @@ export default function OverallInvestments({ data, loading }) {
                     className="text-xs font-medium"
                     style={{ color: itemIsProfit ? '#22C55E' : '#EF4444' }}
                   >
-                    {formatPercent(item.returnPercentage).replace(/^\+/, '')}
+                    {formatPercent(Math.abs(item.returnPercentage)).replace(/^\+/, '')}
                   </span>
                 </div>
               </div>

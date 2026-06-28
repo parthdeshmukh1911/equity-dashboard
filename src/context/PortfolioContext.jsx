@@ -131,6 +131,50 @@ export function PortfolioProvider({ children }) {
     });
   }, []);
 
+  const executeHoldingAction = useCallback(
+  async (apiFn, payload) => {
+    const result = await apiFn(payload);
+    await refreshAll();
+    return result;
+  },
+  [refreshAll]
+);
+
+const buyMore = useCallback(
+  (payload) =>
+    executeHoldingAction(
+      api.buyMore,
+      payload
+    ),
+  [executeHoldingAction]
+);
+const updateHolding = useCallback(
+  (payload) =>
+    executeHoldingAction(
+      api.updateHolding,
+      payload
+    ),
+  [executeHoldingAction]
+);
+
+const sellHolding = useCallback(
+  (payload) =>
+    executeHoldingAction(
+      api.sellHolding,
+      payload
+    ),
+  [executeHoldingAction]
+);
+
+const addHolding = useCallback(
+  (payload) =>
+    executeHoldingAction(
+      api.addHolding,
+      payload
+    ),
+  [executeHoldingAction]
+);
+
   useEffect(() => {
     let intervalId;
     let cancelled = false;
@@ -151,17 +195,21 @@ export function PortfolioProvider({ children }) {
   }, [refreshAll, refreshLiveHoldings]);
 
   const value = {
-    state,
-    fetchOverallInvestments,
-    fetchAssetAllocation,
-    fetchOverallSectorAllocation,
-    fetchStocksAllocation,
-    fetchStocks,
-    fetchEtfs,
-    fetchMutualFunds,
-    refreshLiveHoldings,
-    refreshAll,
-  };
+  state,
+  fetchOverallInvestments,
+  fetchAssetAllocation,
+  fetchOverallSectorAllocation,
+  fetchStocksAllocation,
+  fetchStocks,
+  fetchEtfs,
+  fetchMutualFunds,
+  refreshLiveHoldings,
+  refreshAll,
+  buyMore,
+  updateHolding,
+  sellHolding,
+  addHolding
+};
 
   return (
     <PortfolioContext.Provider value={value}>

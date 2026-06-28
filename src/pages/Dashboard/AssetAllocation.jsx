@@ -36,7 +36,7 @@ export default function AssetAllocation({ data, loading }) {
       >
         {filteredData.map((item, i) => {
           const percentage = totalAllocation > 0 ? (item.allocation / totalAllocation) * 100 : 0;
-          const barColor = item.asset === 'Equity' ? 'bg-blue-500' : 'bg-emerald-500';
+          const barColor = item.asset === 'Equity' ? 'bg-blue-500' : 'bg-green-500';
 
           return (
             <div key={item.asset} className="flex flex-col gap-1.5">
