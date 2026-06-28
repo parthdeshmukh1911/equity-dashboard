@@ -4,6 +4,8 @@ import Modal from '../../components/ui/Modal';
 import Badge from '../../components/ui/Badge';
 import { formatCurrency, formatPercent } from '../../utils/formatters';
 import { usePrivacy } from '../../context/PrivacyContext';
+import { useState } from 'react';
+import BuyMoreModal from '../../components/portfolio/BuyMoreModal';
 
 /**
  * Maps a sector/category string to a Badge color variant.
@@ -141,6 +143,7 @@ export default function DetailScreen({ holding, isOpen, onClose }) {
   } = holding;
 
   const { isPrivacyMode } = usePrivacy();
+  const [showBuyMore, setShowBuyMore] = useState(false);
 
   const returnValue = holding.returnValue !== undefined 
     ? holding.returnValue 
@@ -332,7 +335,48 @@ export default function DetailScreen({ holding, isOpen, onClose }) {
             )}
           </dl>
         </section>
+        <div className="px-4 mt-8">
+
+  <button
+
+    type="button"
+
+    onClick={() =>
+
+      setShowBuyMore(true)
+
+    }
+
+    className="w-full rounded-2xl py-4 text-white font-semibold"
+
+    style={{
+
+      background:
+        "linear-gradient(135deg,#10B981,#059669)"
+
+    }}
+
+  >
+
+    Buy More
+
+  </button>
+
+</div>
       </motion.div>
+      <BuyMoreModal
+
+  holding={holding}
+
+  isOpen={showBuyMore}
+
+  onClose={() =>
+
+    setShowBuyMore(false)
+
+  }
+
+/>
     </Modal>
   );
 }
