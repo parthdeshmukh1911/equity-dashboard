@@ -15,9 +15,11 @@ import {
   TrendingDown,
   TrendingUp,
   X,
+  Search,
 } from 'lucide-react';
 import RefreshButton from '../../components/ui/RefreshButton';
 import usePageScrollRestoration from '../../hooks/usePageScrollRestoration';
+import AddHoldingModal from "../../components/portfolio/AddHoldingModal";
 
 const TAB_CONFIG = [
   { label: 'Stocks',       stateKey: 'stocks',      fetchKey: 'fetchStocks'      },
@@ -45,11 +47,15 @@ export default function PortfolioPage() {
   const [activeTab, setActiveTab] = useState(TAB_LABELS[0]);
   const [selectedHolding, setSelectedHolding] = useState(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [addHoldingOpen, setAddHoldingOpen] = useState(false);
   const [showSortFilter, setShowSortFilter] = useState(false);
   const [sortBy, setSortBy] = useState('currentValue');
   const [sortDirection, setSortDirection] = useState('desc');
   const [filterBy, setFilterBy] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const swipeStart = useRef(null);
+  const searchInputRef = useRef(null);
 
   const { state, fetchStocks, fetchEtfs, fetchMutualFunds, refreshAll } = usePortfolio();
   const fetchFns = { fetchStocks, fetchEtfs, fetchMutualFunds };
@@ -69,6 +75,13 @@ export default function PortfolioPage() {
   useEffect(() => {
     ensureTabData(activeTab);
   }, []);
+
+  // Focus search input when opened
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isSearchOpen]);
 
   function handleTabChange(tab) {
     setActiveTab(tab);
@@ -120,11 +133,22 @@ export default function PortfolioPage() {
   const error    = activeSlice?.error  ?? null;
 
   if (holdings && Array.isArray(holdings)) {
+    // 1. Text Search Filter
+    if (searchQuery.trim() !== '') {
+      const query = searchQuery.toLowerCase().trim();
+      holdings = holdings.filter(
+        h => (h.name ?? '').toLowerCase().includes(query) || (h.symbol ?? '').toLowerCase().includes(query)
+      );
+    }
+
+    // 2. Returns Filter
     if (filterBy === 'profit') {
       holdings = holdings.filter(h => (h.pnl ?? h.returnPct ?? 0) >= 0);
     } else if (filterBy === 'loss') {
       holdings = holdings.filter(h => (h.pnl ?? h.returnPct ?? 0) < 0);
     }
+
+    // 3. Sorting Engine
     holdings = [...holdings].sort((a, b) => {
       let comparison;
       if (sortBy === 'name') {
@@ -166,29 +190,73 @@ export default function PortfolioPage() {
     >
       {/* ── Page header ─────────────────────────────────────────────────── */}
       <header className="px-4 pb-4">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-2xl font-bold text-white">Portfolio</h1>
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between mb-4 h-10 relative overflow-hidden">
+          <AnimatePresence mode="wait">
+            {!isSearchOpen ? (
+              <motion.h1
+                key="title"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }}
+                className="text-2xl font-bold text-white absolute left-0"
+              >
+                Portfolio
+              </motion.h1>
+            ) : (
+              <motion.div
+                key="search-input"
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: 'calc(100% - 165px)' }}
+                exit={{ opacity: 0, width: 0 }}
+                className="absolute left-0 right-24 flex items-center"
+              >
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder={`Search ${activeTab}...`}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full rounded-xl bg-slate-800 p-2 pl-3 pr-8 text-sm text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-2.5 text-slate-400 hover:text-white"
+                  >
+                    <X size={14} />
+                  </button>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="flex items-center gap-2 absolute right-0">
+            <button
+              onClick={() => {
+                if (isSearchOpen) setSearchQuery('');
+                setIsSearchOpen(!isSearchOpen);
+              }}
+              className={`rounded-full p-2 transition-colors ${isSearchOpen ? 'bg-slate-800 text-emerald-400' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+              aria-label="Toggle search input"
+            >
+              {isSearchOpen ? <X size={20} /> : <Search size={20} />}
+            </button>
+            <button
+              onClick={() => setAddHoldingOpen(true)}
+              className="rounded-full bg-blue-600 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-blue-500"
+            >
+              + Add
+            </button>
             <RefreshButton onRefresh={refreshAll} />
             <PrivacyToggle />
           </div>
         </div>
+        
         <TabBar
           tabs={TAB_LABELS}
           activeTab={activeTab}
           onChange={handleTabChange}
         />
-        <div className="flex items-center justify-end mt-4">
-          <button
-            onClick={() => setShowSortFilter(true)}
-            aria-expanded={showSortFilter}
-            aria-controls="asset-view-controls"
-            className="flex items-center gap-2 rounded-xl border border-slate-700/80 bg-slate-800/70 px-3 py-2 text-sm font-medium text-slate-200 shadow-sm transition-colors hover:border-emerald-500/50 hover:bg-slate-800"
-          >
-            <SlidersHorizontal size={14} />
-            Filters & Sorting
-          </button>
-        </div>
       </header>
 
       {/* ── Holdings list ────────────────────────────────────────────────── */}
@@ -210,11 +278,23 @@ export default function PortfolioPage() {
         </motion.div>
       </section>
 
+      {/* ── Floating Solid High-Visibility FAB Button ────────────────────── */}
+      <button
+        onClick={() => setShowSortFilter(true)}
+        aria-expanded={showSortFilter}
+        aria-controls="asset-view-controls"
+        className="fixed right-6 bottom-24 z-30 flex h-14 w-14 items-center justify-center rounded-full border border-slate-700/60 bg-gradient-to-tr from-slate-800 to-slate-900 text-teal-400 shadow-2xl transition-transform active:scale-95 hover:border-emerald-500/50"        style={{
+          bottom: 'calc(6rem + env(safe-area-inset-bottom))'
+        }}
+        aria-label="Open sorting and filters"
+      >
+        <SlidersHorizontal size={22} strokeWidth={2.5} />
+      </button>
+
       {/* ── Floating Modern Bottom Sheet Panel ───────────────────────────── */}
       <AnimatePresence>
         {showSortFilter && (
           <>
-            {/* Dark Backdrop Overlay */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -222,8 +302,6 @@ export default function PortfolioPage() {
               onClick={() => setShowSortFilter(false)}
               className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
             />
-            
-            {/* Bottom Sheet Slider */}
             <motion.div
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
@@ -232,13 +310,10 @@ export default function PortfolioPage() {
               id="asset-view-controls"
               className="fixed bottom-0 left-0 right-0 z-50 rounded-t-3xl border-t border-slate-700/80 bg-slate-900 p-5 shadow-2xl max-h-[85vh] overflow-y-auto"
               style={{
-                /* Calculates deep padding to clean your floating bottom navigation bar + mobile phone safe area notches */
                 paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))'
               }}
             >
-              {/* Drag Handle Indicator */}
               <div className="mx-auto mb-4 h-1 w-12 rounded-full bg-slate-700" />
-
               <div className="mb-5 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-400/10 text-emerald-400">
@@ -321,6 +396,11 @@ export default function PortfolioPage() {
           </>
         )}
       </AnimatePresence>
+
+      <AddHoldingModal
+        isOpen={addHoldingOpen}
+        onClose={() => setAddHoldingOpen(false)}
+      />
 
       {/* ── Detail Screen modal overlay ──────────────────────────────────── */}
       <DetailScreen
