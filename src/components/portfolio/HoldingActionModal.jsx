@@ -39,15 +39,15 @@ export default function HoldingActionModal({ holding, isOpen, onClose }) {
         setQuantity(String(holding.quantity));
         setPrice(
 
-  String(
+          String(
 
-    holding.buyPrice ??
+            holding.buyPrice ??
 
-    holding.price
+            holding.price
 
-  )
+          )
 
-);
+        );
         break;
       case ACTIONS.SELL:
         setQuantity("");
@@ -113,19 +113,19 @@ export default function HoldingActionModal({ holding, isOpen, onClose }) {
     }
     if (
 
-  action === ACTIONS.UPDATE
+      action === ACTIONS.UPDATE
 
-) {
+    ) {
 
-  return {
+      return {
 
-    quantity: qty,
+        quantity: qty,
 
-    average: avg
+        average: avg
 
-  };
+      };
 
-}
+    }
     return null;
   }, [action, qty, avg, holding]);
 
@@ -137,31 +137,28 @@ export default function HoldingActionModal({ holding, isOpen, onClose }) {
         <div className="grid grid-cols-3 gap-2 mb-6">
           <button
             onClick={() => setAction(ACTIONS.BUY)}
-            className={`rounded-full py-3 font-semibold transition ${
-              action === ACTIONS.BUY
+            className={`rounded-full py-3 font-semibold transition ${action === ACTIONS.BUY
                 ? "bg-green-500 text-white"
                 : "bg-slate-800 text-slate-300"
-            }`}
+              }`}
           >
             Buy More
           </button>
           <button
             onClick={() => setAction(ACTIONS.UPDATE)}
-            className={`rounded-full py-3 font-semibold transition ${
-              action === ACTIONS.UPDATE
+            className={`rounded-full py-3 font-semibold transition ${action === ACTIONS.UPDATE
                 ? "bg-sky-600 text-white"
                 : "bg-slate-800 text-slate-300"
-            }`}
+              }`}
           >
             Update
           </button>
           <button
             onClick={() => setAction(ACTIONS.SELL)}
-            className={`rounded-full py-3 font-semibold transition ${
-              action === ACTIONS.SELL
+            className={`rounded-full py-3 font-semibold transition ${action === ACTIONS.SELL
                 ? "bg-red-500 text-white"
                 : "bg-slate-800 text-slate-300"
-            }`}
+              }`}
           >
             Sell
           </button>
@@ -204,31 +201,31 @@ export default function HoldingActionModal({ holding, isOpen, onClose }) {
             )}
             {action === ACTIONS.UPDATE && (
 
-  <>
+              <>
 
-    <p>
+                <p>
 
-      Updated Quantity :
+                  Updated Quantity :
 
-      <b> {preview.quantity}</b>
+                  <b> {preview.quantity}</b>
 
-    </p>
+                </p>
 
-    <p>
+                <p>
 
-      Updated Average :
+                  Updated Average :
 
-      <b>
+                  <b>
 
-        ₹{preview.average.toFixed(2)}
+                    ₹{preview.average.toFixed(2)}
 
-      </b>
+                  </b>
 
-    </p>
+                </p>
 
-  </>
+              </>
 
-)}
+            )}
           </div>
         )}
         {/* Footer */}
@@ -240,24 +237,23 @@ export default function HoldingActionModal({ holding, isOpen, onClose }) {
             Cancel
           </button>
           <button
-  disabled={loading || qty <= 0 || (action !== ACTIONS.SELL && avg <= 0)}
-  onClick={handleContinue}
-  className={`flex-1 rounded-full py-3 font-semibold text-white transition ${
-    action === ACTIONS.BUY
-      ? "bg-gradient-to-r from-green-500 to-green-400"
-      : action === ACTIONS.UPDATE
-      ? "bg-gradient-to-r from-sky-600 to-sky-500"
-      : "bg-gradient-to-r from-red-600 to-red-500"
-  } disabled:opacity-50 disabled:cursor-not-allowed`}
->
-  {loading
-    ? "Saving..."
-    : action === ACTIONS.BUY
-    ? "Buy More"
-    : action === ACTIONS.UPDATE
-    ? "Update Holding"
-    : "Sell Holding"}
-</button>
+            disabled={loading || qty <= 0 || (action !== ACTIONS.SELL && avg <= 0)}
+            onClick={handleContinue}
+            className={`flex-1 rounded-full py-3 font-semibold text-white transition ${action === ACTIONS.BUY
+                ? "bg-gradient-to-r from-green-500 to-green-400"
+                : action === ACTIONS.UPDATE
+                  ? "bg-gradient-to-r from-sky-600 to-sky-500"
+                  : "bg-gradient-to-r from-red-600 to-red-500"
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+          >
+            {loading
+              ? "Saving..."
+              : action === ACTIONS.BUY
+                ? "Buy More"
+                : action === ACTIONS.UPDATE
+                  ? "Update Holding"
+                  : "Sell Holding"}
+          </button>
         </div>
       </div>
     </Modal>

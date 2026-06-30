@@ -22,8 +22,8 @@ import usePageScrollRestoration from '../../hooks/usePageScrollRestoration';
 import AddHoldingModal from "../../components/portfolio/AddHoldingModal";
 
 const TAB_CONFIG = [
-  { label: 'Stocks',       stateKey: 'stocks',      fetchKey: 'fetchStocks'      },
-  { label: 'ETFs',         stateKey: 'etfs',        fetchKey: 'fetchEtfs'        },
+  { label: 'Stocks', stateKey: 'stocks', fetchKey: 'fetchStocks' },
+  { label: 'ETFs', stateKey: 'etfs', fetchKey: 'fetchEtfs' },
   { label: 'Mutual Funds', stateKey: 'mutualFunds', fetchKey: 'fetchMutualFunds' },
 ];
 
@@ -38,7 +38,7 @@ const SORT_OPTIONS = [
 ];
 
 const pageVariants = {
-  hidden:  { opacity: 0, y: 12 },
+  hidden: { opacity: 0, y: 12 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: 'easeOut' } },
 };
 
@@ -127,10 +127,10 @@ export default function PortfolioPage() {
   }
 
   const activeConfig = TAB_CONFIG.find((t) => t.label === activeTab);
-  const activeSlice  = activeConfig ? state[activeConfig.stateKey] : null;
-  let holdings = activeSlice?.data  ?? null;
-  const loading  = activeSlice?.loading ?? false;
-  const error    = activeSlice?.error  ?? null;
+  const activeSlice = activeConfig ? state[activeConfig.stateKey] : null;
+  let holdings = activeSlice?.data ?? null;
+  const loading = activeSlice?.loading ?? false;
+  const error = activeSlice?.error ?? null;
 
   if (holdings && Array.isArray(holdings)) {
     // 1. Text Search Filter
@@ -251,7 +251,7 @@ export default function PortfolioPage() {
             <PrivacyToggle />
           </div>
         </div>
-        
+
         <TabBar
           tabs={TAB_LABELS}
           activeTab={activeTab}
@@ -283,7 +283,7 @@ export default function PortfolioPage() {
         onClick={() => setShowSortFilter(true)}
         aria-expanded={showSortFilter}
         aria-controls="asset-view-controls"
-        className="fixed right-6 bottom-24 z-30 flex h-14 w-14 items-center justify-center rounded-full border border-slate-700/60 bg-gradient-to-tr from-slate-800 to-slate-900 text-teal-400 shadow-2xl transition-transform active:scale-95 hover:border-emerald-500/50"        style={{
+        className="fixed right-6 bottom-24 z-30 flex h-14 w-14 items-center justify-center rounded-full border border-slate-700/60 bg-gradient-to-tr from-slate-800 to-slate-900 text-teal-400 shadow-2xl transition-transform active:scale-95 hover:border-emerald-500/50" style={{
           bottom: 'calc(6rem + env(safe-area-inset-bottom))'
         }}
         aria-label="Open sorting and filters"
@@ -330,7 +330,7 @@ export default function PortfolioPage() {
                   <X size={16} />
                 </button>
               </div>
-              
+
               <div className="space-y-6">
                 <div>
                   <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Sort by</p>

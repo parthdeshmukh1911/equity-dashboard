@@ -4,13 +4,19 @@
 
 :root {
   /* Design System Color Palette */
-  --primary: #0F172A;        /* Deep Navy */
-  --secondary: #1E293B;      /* Slate */
-  --accent: #10B981;         /* Emerald */
-  --profit: #22C55E;         /* Green */
-  --loss: #EF4444;           /* Red */
-  --light-bg: #F8FAFC;       /* Off-White */
-  
+  --primary: #0F172A;
+  /* Deep Navy */
+  --secondary: #1E293B;
+  /* Slate */
+  --accent: #10B981;
+  /* Emerald */
+  --profit: #22C55E;
+  /* Green */
+  --loss: #EF4444;
+  /* Red */
+  --light-bg: #F8FAFC;
+  /* Off-White */
+
   /* Safe Area Insets for iPhone */
   --safe-area-inset-top: env(safe-area-inset-top);
   --safe-area-inset-right: env(safe-area-inset-right);
@@ -19,7 +25,7 @@
 
   /* Typography */
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  
+
   font: 16px/145% var(--sans);
   color-scheme: light dark;
   font-synthesis: none;

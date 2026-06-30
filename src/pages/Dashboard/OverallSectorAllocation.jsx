@@ -14,7 +14,7 @@ export default function OverallSectorAllocation({ data, loading }) {
   // Sort by allocation descending
   const sortedData = [...data].sort((a, b) => b.allocation - a.allocation);
   const topSectors = sortedData.slice(0, 5);
-  
+
   // Calculate 'Others' if there are more than 5
   if (sortedData.length > 5) {
     const othersAllocation = sortedData.slice(5).reduce((sum, item) => sum + item.allocation, 0);
@@ -49,7 +49,7 @@ export default function OverallSectorAllocation({ data, loading }) {
             </div>
             {/* Progress bar */}
             <div className="w-full bg-slate-700/50 rounded-full h-2 mt-1 overflow-hidden">
-              <motion.div 
+              <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${item.allocation}%` }}
                 transition={{ duration: 0.8, delay: i * 0.1 }}

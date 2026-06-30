@@ -145,8 +145,8 @@ export default function DetailScreen({ holding, isOpen, onClose }) {
   const { isPrivacyMode } = usePrivacy();
   const [showHoldingAction, setShowHoldingAction] = useState(false);
 
-  const returnValue = holding.returnValue !== undefined 
-    ? holding.returnValue 
+  const returnValue = holding.returnValue !== undefined
+    ? holding.returnValue
     : (currentValue && investedValue ? currentValue - investedValue : 0);
 
   const isProfit = returnValue >= 0;
@@ -351,21 +351,21 @@ export default function DetailScreen({ holding, isOpen, onClose }) {
       </motion.div>
 
       <HoldingActionModal
-  holding={{
-    ...holding,
+        holding={{
+          ...holding,
 
-    assetType:
-      holding.symbol
-        ? (
-            category === "ETF"
-              ? "etfs"
-              : "stocks"
-          )
-        : "mutualFunds"
-  }}
-  isOpen={showHoldingAction}
-  onClose={() => setShowHoldingAction(false)}
-/>
+          assetType:
+            holding.symbol
+              ? (
+                category === "ETF"
+                  ? "etfs"
+                  : "stocks"
+              )
+              : "mutualFunds"
+        }}
+        isOpen={showHoldingAction}
+        onClose={() => setShowHoldingAction(false)}
+      />
     </Modal>
   );
 }

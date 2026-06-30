@@ -57,7 +57,7 @@ function FullSectorList({ data, loading }) {
             </div>
           </div>
           <div className="w-full bg-slate-700/50 rounded-full h-1.5 mt-1 overflow-hidden">
-            <motion.div 
+            <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${item.allocation}%` }}
               transition={{ duration: 0.8, delay: i * 0.05 }}

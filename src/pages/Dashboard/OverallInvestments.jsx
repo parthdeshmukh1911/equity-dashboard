@@ -23,7 +23,7 @@ export default function OverallInvestments({ data, loading }) {
   return (
     <section className="mb-6">
       <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3 px-1">Overall Investments</h2>
-      
+
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -36,7 +36,7 @@ export default function OverallInvestments({ data, loading }) {
               {isPrivacyMode ? '₹***' : formatCurrency(total.current)}
             </span>
           </div>
-          
+
           <div className="flex items-center gap-2 mt-2">
             <div className={`flex items-center gap-1 px-2 py-1 rounded-md text-sm font-medium ${isProfit ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
               {isProfit ? <TrendingUp size={16} /> : <TrendingDown size={16} />}

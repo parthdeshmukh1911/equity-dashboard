@@ -98,8 +98,8 @@ export default function HoldingCard({ holding, variant = 'full', onPress }) {
   const { isPrivacyMode } = usePrivacy();
 
   // Calculate absolute return value
-  const returnValue = holding.returnValue !== undefined 
-    ? holding.returnValue 
+  const returnValue = holding.returnValue !== undefined
+    ? holding.returnValue
     : (currentValue && investedValue ? currentValue - investedValue : 0);
 
   const isProfit = returnValue >= 0;
@@ -121,11 +121,11 @@ export default function HoldingCard({ holding, variant = 'full', onPress }) {
   // onKeyDown handler is needed — the browser handles keyboard activation.
   const interactiveProps = onPress
     ? {
-        role: 'button',
-        tabIndex: 0,
-        onClick: onPress,
-        style: { ...glassStyle, cursor: 'pointer' },
-      }
+      role: 'button',
+      tabIndex: 0,
+      onClick: onPress,
+      style: { ...glassStyle, cursor: 'pointer' },
+    }
     : { style: glassStyle };
 
   /* ─── COMPACT VARIANT ───────────────────────────────────────────────── */
@@ -134,10 +134,10 @@ export default function HoldingCard({ holding, variant = 'full', onPress }) {
     const tagProps =
       Tag === 'button'
         ? {
-            type: 'button',
-            onClick: onPress,
-            style: { ...glassStyle, cursor: 'pointer' },
-          }
+          type: 'button',
+          onClick: onPress,
+          style: { ...glassStyle, cursor: 'pointer' },
+        }
         : { style: glassStyle };
 
     return (
@@ -169,10 +169,10 @@ export default function HoldingCard({ holding, variant = 'full', onPress }) {
   const tagProps =
     Tag === 'button'
       ? {
-          type: 'button',
-          onClick: onPress,
-          style: { ...glassStyle, cursor: 'pointer' },
-        }
+        type: 'button',
+        onClick: onPress,
+        style: { ...glassStyle, cursor: 'pointer' },
+      }
       : { style: glassStyle };
 
   return (

@@ -17,7 +17,7 @@ export default function AssetAllocation({ data, loading }) {
   // Find the total row and individual items
   const totalItem = data.find((d) => d.asset === 'Total');
   const filteredData = data.filter((d) => d.asset !== 'Total' && d.allocation > 0);
-  
+
   const totalAllocation = totalItem ? totalItem.allocation : filteredData.reduce((acc, curr) => acc + curr.allocation, 0);
 
   const formatCurrency = (val) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(val || 0);
@@ -50,7 +50,7 @@ export default function AssetAllocation({ data, loading }) {
                 </div>
               </div>
               <div className="w-full bg-slate-700/50 rounded-full h-2.5 overflow-hidden">
-                <motion.div 
+                <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${percentage}%` }}
                   transition={{ duration: 0.8, delay: i * 0.1 }}
