@@ -1,1 +1,0 @@
-import{E as e,T as t}from"./index-fX-YdHpv.js";var n=e(t(),1),r=new Map;function i(e){let t=(0,n.useRef)(null);return(0,n.useLayoutEffect)(()=>{let n=t.current;if(n)return n.scrollTop=r.get(e)??0,()=>{r.set(e,n.scrollTop)}},[e]),t}export{i as t};
