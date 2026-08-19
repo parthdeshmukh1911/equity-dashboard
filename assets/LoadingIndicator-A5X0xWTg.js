@@ -1,4 +1,4 @@
-import{w as e}from"./index-JLJeW9ok.js";var t=e();function n({loading:e}){return e?(0,t.jsxs)(`span`,{className:`relative flex h-3 w-3`,children:[(0,t.jsx)(`span`,{className:`
+import{w as e}from"./index-com3yS1i.js";var t=e();function n({loading:e}){return e?(0,t.jsxs)(`span`,{className:`relative flex h-3 w-3`,children:[(0,t.jsx)(`span`,{className:`
           absolute
           inline-flex
           h-full
