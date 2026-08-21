@@ -123,6 +123,149 @@ function normalizeFD(item, index, totalValue = 0) {
   };
 }
 
+function normalizeWatchlistItem(item) {
+  const curPrice = Number(item.current_price ?? item.added_price ?? 0);
+  const addedPrice = Number(item.added_price ?? 0);
+  const prevClose = Number(item.prev_close ?? curPrice);
+  const retPct = Number(item.return_since_added_pct ?? (addedPrice > 0 ? ((curPrice - addedPrice) / addedPrice) * 100 : 0));
+  const retAbs = Number(item.return_since_added_abs ?? (curPrice - addedPrice));
+  const dayPct = Number(item.day_change_pct ?? (prevClose > 0 ? ((curPrice - prevClose) / prevClose) * 100 : 0));
+  const dayAbs = Number(item.day_change_abs ?? (curPrice - prevClose));
+
+  return {
+    watchlistId: item.watchlist_id,
+    symbol: item.symbol,
+    isin: item.isin || '',
+    name: item.name || item.symbol,
+    sector: item.sector || '',
+    confidence: item.confidence || 'Medium',
+    badge: item.badge || 'Trade',
+    addedPrice,
+    targetPrice: item.target_price != null ? Number(item.target_price) : null,
+    notes: item.notes || '',
+    addedAt: item.added_at,
+    currentPrice: curPrice,
+    prevClose,
+    returnSinceAddedPct: retPct,
+    returnSinceAddedAbs: retAbs,
+    dayChangePercent: dayPct,
+    dayChangeAbs: dayAbs,
+    inPortfolio: Boolean(item.in_portfolio)
+  };
+}
+
+function normalizePaperHolding(item, index) {
+  const curVal = Number(item.current_value || 0);
+  const invVal = Number(item.invested_value || 0);
+  const retAbs = Number(item.return_abs ?? (curVal - invVal));
+  const retPct = Number(item.return_pct ?? (invVal > 0 ? (retAbs / invVal) * 100 : 0));
+  const dayAbs = Number(item.day_change_abs || 0);
+  const dayPct = Number(item.day_change_pct || 0);
+
+  return {
+    srNo: index + 1,
+    assetId: item.asset_id,
+    symbol: item.symbol,
+    name: item.name || item.symbol,
+    sector: item.sector || '',
+    confidence: item.confidence || 'Medium',
+    badge: item.badge || item.trade_type || 'Trade',
+    quantity: Number(item.total_quantity || 0),
+    buyPrice: Number(item.avg_price || 0),
+    investedValue: invVal,
+    currentPrice: Number(item.current_price ?? item.avg_price ?? 0),
+    prevClose: Number(item.prev_close ?? item.current_price ?? item.avg_price ?? 0),
+    currentValue: curVal,
+    returnAbs: retAbs,
+    returnPct: retPct,
+    dayChangeAbs: dayAbs,
+    dayChangePercent: dayPct
+  };
+}
+
+function normalizePaperSummary(item) {
+  if (!item) {
+    return {
+      initialCapital: 5000000,
+      currentCash: 5000000,
+      realizedPnl: 0,
+      totalInvested: 0,
+      totalCurrent: 0,
+      unrealizedPnl: 0,
+      totalDayChange: 0,
+      portfolioValue: 5000000,
+      totalPnl: 0,
+      totalPnlPct: 0
+    };
+  }
+
+  const initCap = Number(item.initial_capital ?? 5000000);
+  const cash = Number(item.current_cash ?? 5000000);
+  const realPnl = Number(item.realized_pnl ?? 0);
+  const totInv = Number(item.total_invested ?? 0);
+  const totCur = Number(item.total_current ?? 0);
+  const unrealPnl = Number(item.unrealized_pnl ?? (totCur - totInv));
+  const dayChg = Number(item.total_day_change ?? 0);
+  const portVal = Number(item.portfolio_value ?? (totCur + cash));
+  const totPnl = Number(item.total_pnl ?? (unrealPnl + realPnl));
+  const totPnlPct = Number(item.total_pnl_pct ?? (initCap > 0 ? (totPnl / initCap) * 100 : 0));
+
+  return {
+    initialCapital: initCap,
+    currentCash: cash,
+    realizedPnl: realPnl,
+    totalInvested: totInv,
+    totalCurrent: totCur,
+    unrealizedPnl: unrealPnl,
+    totalDayChange: dayChg,
+    portfolioValue: portVal,
+    totalPnl: totPnl,
+    totalPnlPct: totPnlPct
+  };
+}
+
+function normalizeIpo(item) {
+  if (!item) return null;
+  const priceNum = Number(item.price_num || 0);
+  const lotSize = Number(item.lot_size || 1);
+  const gmpAmount = Number(item.gmp_amount || 0);
+  const gmpPercent = Number(item.gmp_percent || 0);
+  const expectedProfit = gmpAmount * lotSize;
+  const minInvestment = priceNum * lotSize;
+
+  return {
+    id: item.id,
+    name: item.ipo_name,
+    category: item.category || 'IPO',
+    status: item.status || 'Upcoming',
+    statusBadge: item.status_badge || item.status || 'Upcoming',
+    gmpAmount,
+    gmpPercent,
+    gmpTrend: item.gmp_trend || '',
+    ratingFlames: Number(item.rating_flames || 0),
+    priceStr: item.price_str || String(priceNum),
+    priceNum,
+    ipoSize: item.ipo_size || 'N/A',
+    lotSize,
+    peRatio: item.pe_ratio || '--',
+    subscription: item.subscription || '-',
+    openDate: item.open_date || '',
+    closeDate: item.close_date || '',
+    boaDate: item.boa_date || '',
+    listingDate: item.listing_date || '',
+    sortOpen: item.sort_open || null,
+    sortClose: item.sort_close || null,
+    sortBoa: item.sort_boa || null,
+    sortListing: item.sort_listing || null,
+    updatedOn: item.updated_on_text || '',
+    anchorAvailable: Boolean(item.anchor_available),
+    investorGainUrl: item.investorgain_url || '',
+    allotmentUrl: item.allotment_url || null,
+    expectedProfit,
+    minInvestment
+  };
+}
+
 const requestCache = {};
 function dedupeRequest(key, fetcher) {
   if (!requestCache[key]) {
@@ -624,5 +767,111 @@ export const supabaseApi = {
 
   deleteFD: async (payload) => {
     return supabaseApi.executeTrade({ action: 'deleteFD', ...payload });
+  },
+
+  // -----------------------------------------
+  // Master NSE Stocks Search API
+  // -----------------------------------------
+  searchNseStocks: async (query) => {
+    if (!query || !query.trim()) return [];
+    const trimmed = query.trim();
+    const { data, error } = await supabase
+      .from('nse_stocks')
+      .select('symbol, name, isin, sector, series')
+      .or(`symbol.ilike.%${trimmed}%,name.ilike.%${trimmed}%,isin.ilike.%${trimmed}%`)
+      .limit(15);
+
+    if (error) {
+      console.warn('[Supabase] searchNseStocks error:', error);
+      return [];
+    }
+
+    return (data || []).map(item => ({
+      symbol: item.symbol,
+      name: item.name,
+      isin: item.isin,
+      sector: item.sector || '',
+      series: item.series || 'EQ'
+    }));
+  },
+
+  // -----------------------------------------
+  // Watchlist APIs
+  // -----------------------------------------
+  getWatchlist: () => dedupeRequest('WATCHLIST', async () => {
+    const { data, error } = await supabase
+      .from('vw_watchlist')
+      .select('*')
+      .order('added_at', { ascending: false });
+
+    if (error) throw error;
+    return (data || []).map(normalizeWatchlistItem);
+  }),
+
+  addWatchlistItem: async (payload) => {
+    return supabaseApi.executeTrade({ action: 'addWatchlistItem', ...payload });
+  },
+
+  removeWatchlistItem: async (payload) => {
+    return supabaseApi.executeTrade({ action: 'removeWatchlistItem', ...payload });
+  },
+
+  // -----------------------------------------
+  // Paper Trading APIs
+  // -----------------------------------------
+  getPaperPortfolio: () => dedupeRequest('PAPER_PORTFOLIO', async () => {
+    const [{ data: summaryData, error: summaryErr }, { data: holdingsData, error: holdingsErr }] = await Promise.all([
+      supabase.from('vw_paper_summary').select('*').maybeSingle(),
+      supabase.from('vw_paper_holdings').select('*').order('current_value', { ascending: false })
+    ]);
+
+    if (summaryErr) console.warn('[Supabase] paper summary view error:', summaryErr);
+    if (holdingsErr) console.warn('[Supabase] paper holdings view error:', holdingsErr);
+
+    const summary = normalizePaperSummary(summaryData);
+    const holdings = (holdingsData || []).map(normalizePaperHolding);
+
+    return { summary, holdings };
+  }),
+
+  addPaperHolding: async (payload) => {
+    return supabaseApi.executeTrade({ action: 'addPaperHolding', ...payload });
+  },
+
+  sellPaperHolding: async (payload) => {
+    return supabaseApi.executeTrade({ action: 'sellPaperHolding', ...payload });
+  },
+
+  updatePaperCapital: async (payload) => {
+    return supabaseApi.executeTrade({ action: 'updatePaperCapital', ...payload });
+  },
+
+  resetPaperPortfolio: async () => {
+    return supabaseApi.executeTrade({ action: 'resetPaperPortfolio' });
+  },
+
+  // -----------------------------------------
+  // Mainboard IPO APIs
+  // -----------------------------------------
+  getIpos: () => dedupeRequest('IPOS', async () => {
+    const { data, error } = await supabase
+      .from('mainboard_ipos')
+      .select('*')
+      .order('sort_close', { ascending: true, nullsFirst: false });
+
+    if (error) throw error;
+    return (data || []).map(normalizeIpo);
+  }),
+
+  getIpoById: async (id) => {
+    if (!id) return null;
+    const { data, error } = await supabase
+      .from('mainboard_ipos')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error) throw error;
+    return normalizeIpo(data);
   }
 };

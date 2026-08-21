@@ -30,4 +30,24 @@ describe('Supabase Client API', () => {
     expect(typeof supabaseApi.updateFD).toBe('function');
     expect(typeof supabaseApi.deleteFD).toBe('function');
   });
+
+  it('should export all required search & watchlist methods', () => {
+    expect(typeof supabaseApi.searchNseStocks).toBe('function');
+    expect(typeof supabaseApi.getWatchlist).toBe('function');
+    expect(typeof supabaseApi.addWatchlistItem).toBe('function');
+    expect(typeof supabaseApi.removeWatchlistItem).toBe('function');
+  });
+
+  it('should export all required paper trading methods', () => {
+    expect(typeof supabaseApi.getPaperPortfolio).toBe('function');
+    expect(typeof supabaseApi.addPaperHolding).toBe('function');
+    expect(typeof supabaseApi.sellPaperHolding).toBe('function');
+    expect(typeof supabaseApi.updatePaperCapital).toBe('function');
+    expect(typeof supabaseApi.resetPaperPortfolio).toBe('function');
+  });
+
+  it('should export all required IPO methods', () => {
+    expect(typeof supabaseApi.getIpos).toBe('function');
+    expect(typeof supabaseApi.getIpoById).toBe('function');
+  });
 });

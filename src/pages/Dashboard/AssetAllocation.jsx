@@ -14,10 +14,10 @@ const formatCrore = (val) => {
 export default function AssetAllocation({ data, loading }) {
   const { isPrivacyMode } = usePrivacy();
 
-  if (loading && !data) {
+  if (loading && (!data || !Array.isArray(data))) {
     return <section className="mb-5"><Skeleton width="100%" height={140} rounded="xl" /></section>;
   }
-  if (!data) return null;
+  if (!data || !Array.isArray(data)) return null;
 
   const totalItem = data.find((d) => d.asset === 'Total');
   const segments = data.filter((d) => d.asset !== 'Total' && d.allocation > 0);

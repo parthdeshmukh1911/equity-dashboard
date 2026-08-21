@@ -1,5 +1,5 @@
 import { createContext, useContext, useReducer, useEffect, useCallback, useRef, useState } from 'react';
-import { api } from '../services/apiClient';
+import { api, isLoggedIn } from '../services/apiClient';
 import { isIndianMarketOpen } from '../utils/marketHours';
 
 function emptySlice() {
@@ -18,6 +18,8 @@ const initialState = {
   etfs: emptySlice(),
   mutualFunds: emptySlice(),
   fds: emptySlice(),
+  watchlist: emptySlice(),
+  paperTrade: emptySlice(),
   lastUpdated: null,
   // Prefetched secondary data
   news: emptySlice(),
@@ -33,6 +35,8 @@ const ENDPOINT_TO_KEY = {
   etfs: 'etfs',
   mutualFunds: 'mutualFunds',
   fds: 'fds',
+  watchlist: 'watchlist',
+  paperTrade: 'paperTrade',
 };
 
 const LIVE_REFRESH_INTERVAL_MS = 60_000;
@@ -43,6 +47,9 @@ function portfolioReducer(state, action) {
   const key = ENDPOINT_TO_KEY[action.endpoint];
 
   switch (action.type) {
+    case "RESET_STATE":
+      return initialState;
+
     case "DASHBOARD_SUCCESS":
       return {
         ...state,
@@ -106,11 +113,26 @@ export function PortfolioProvider({ children }) {
         const cached = localStorage.getItem(CACHE_KEY);
         if (!cached) return initialState;
         const parsed = JSON.parse(cached);
-        // Keep loading/error clean
+        // Keep loading/error clean and validate schema integrity
         Object.keys(ENDPOINT_TO_KEY).forEach((key) => {
-          parsed[key].loading = false;
-          parsed[key].error = null;
+          if (parsed[key]) {
+            parsed[key].loading = false;
+            parsed[key].error = null;
+          }
         });
+        // Clear corrupted legacy cache shapes if present
+        if (parsed.overallInvestments?.data && !Array.isArray(parsed.overallInvestments.data)) {
+          parsed.overallInvestments.data = null;
+        }
+        if (parsed.assetAllocation?.data && !Array.isArray(parsed.assetAllocation.data)) {
+          parsed.assetAllocation.data = null;
+        }
+        if (parsed.overallSectorAllocation?.data && !Array.isArray(parsed.overallSectorAllocation.data)) {
+          parsed.overallSectorAllocation.data = null;
+        }
+        if (parsed.stocksAllocation?.data && !Array.isArray(parsed.stocksAllocation.data)) {
+          parsed.stocksAllocation.data = null;
+        }
         return parsed;
       } catch {
         return initialState;
@@ -122,18 +144,20 @@ export function PortfolioProvider({ children }) {
   const refreshInProgress = useRef(false);
   const [refreshing, setRefreshing] = useState(false);
 
+  const isUserLogged = isLoggedIn();
+
   const fetchEndpoint = useCallback(async (endpoint, apiFn) => {
+    if (!isLoggedIn()) return;
     dispatch({ type: 'FETCH_START', endpoint });
     try {
       const data = await apiFn();
+      if (!data) return;
 
-if (!data) return;
-
-dispatch({
-    type:"FETCH_SUCCESS",
-    endpoint,
-    data
-});
+      dispatch({
+        type: "FETCH_SUCCESS",
+        endpoint,
+        data
+      });
     } catch (error) {
       console.error(`[API ERROR] ${endpoint} ->`, error);
       dispatch({ type: 'FETCH_ERROR', endpoint, error });
@@ -141,6 +165,7 @@ dispatch({
   }, []);
 
   const fetchDashboard = useCallback(async () => {
+    if (!isLoggedIn()) return;
     try {
       dispatch({ type: "FETCH_START", endpoint: "overallInvestments" });
       dispatch({ type: "FETCH_START", endpoint: "assetAllocation" });
@@ -149,8 +174,6 @@ dispatch({
 
       const data = await api.getDashboard();
       if (!data) {
-        // Session expired — apiClient already dispatched app-logout.
-        // Clear loading state so UI doesn't hang on skeletons.
         const sessionErr = { message: 'Session expired' };
         dispatch({ type: 'FETCH_ERROR', endpoint: 'overallInvestments', error: sessionErr });
         dispatch({ type: 'FETCH_ERROR', endpoint: 'assetAllocation', error: sessionErr });
@@ -170,6 +193,7 @@ dispatch({
   }, []);
 
   const fetchPortfolio = useCallback(async () => {
+    if (!isLoggedIn()) return;
     try {
       dispatch({ type: "FETCH_START", endpoint: "stocks" });
       dispatch({ type: "FETCH_START", endpoint: "etfs" });
@@ -178,7 +202,6 @@ dispatch({
 
       const data = await api.getPortfolio();
       if (!data) {
-        // Session expired — apiClient already dispatched app-logout.
         const sessionErr = { message: 'Session expired' };
         dispatch({ type: 'FETCH_ERROR', endpoint: 'stocks', error: sessionErr });
         dispatch({ type: 'FETCH_ERROR', endpoint: 'etfs', error: sessionErr });
@@ -205,10 +228,11 @@ dispatch({
   const fetchEtfs = useCallback(() => fetchEndpoint('etfs', api.getEtfs), [fetchEndpoint]);
   const fetchMutualFunds = useCallback(() => fetchEndpoint('mutualFunds', api.getMutualFunds), [fetchEndpoint]);
   const fetchFDs = useCallback(() => fetchEndpoint('fds', api.getFDs), [fetchEndpoint]);
-
+  const fetchWatchlist = useCallback(() => fetchEndpoint('watchlist', api.getWatchlist), [fetchEndpoint]);
+  const fetchPaperPortfolio = useCallback(() => fetchEndpoint('paperTrade', api.getPaperPortfolio), [fetchEndpoint]);
 
   const refreshAll = useCallback(async () => {
-    if (refreshInProgress.current) {
+    if (!isLoggedIn() || refreshInProgress.current) {
       return;
     }
     refreshInProgress.current = true;
@@ -218,6 +242,8 @@ dispatch({
       const promises = [
         fetchDashboard(),
         fetchPortfolio(),
+        fetchWatchlist(),
+        fetchPaperPortfolio(),
       ];
 
       if (isSupabase) {
@@ -235,9 +261,10 @@ dispatch({
       refreshInProgress.current = false;
       setRefreshing(false);
     }
-  }, [fetchDashboard, fetchPortfolio]);
+  }, [fetchDashboard, fetchPortfolio, fetchWatchlist, fetchPaperPortfolio]);
 
   const refreshLiveHoldings = useCallback(async () => {
+    if (!isLoggedIn()) return;
     if (!isIndianMarketOpen()) return;
     if (liveRefreshInFlight.current) return;
     liveRefreshInFlight.current = true;
@@ -248,16 +275,15 @@ dispatch({
     }
   }, [refreshAll]);
 
-
   const executeHoldingAction = useCallback(async (apiFn, payload) => {
     try {
       const result = await apiFn(payload);
-      refreshAll().catch((error) => {
-        console.error("Background refresh failed:", error);
-      });
+      // Wait for backend to settle, then refresh all data
+      await sleep(1500);
+      await refreshAll();
       return result;
     } catch (error) {
-      console.error("Save failed:", error);
+      console.error("[ACTION ERROR]", error);
       throw error;
     }
   }, [refreshAll]);
@@ -269,13 +295,19 @@ dispatch({
   const updateFD = useCallback((payload) => executeHoldingAction(api.updateFD, payload), [executeHoldingAction]);
   const deleteFD = useCallback((payload) => executeHoldingAction(api.deleteFD, payload), [executeHoldingAction]);
 
-  // ── Prefetch main news (fired 2s after startup load) ─────────────
-  const prefetchSecondaryData = useCallback((portfolioData) => {
-    // portfolioData is the current state snapshot at prefetch time
-    const isSupabase = localStorage.getItem('backend_target') === 'SUPABASE' || (!localStorage.getItem('backend_target') && import.meta.env.VITE_BACKEND_TARGET === 'SUPABASE');
+  // Paper & Watchlist actions
+  const addWatchlistItem = useCallback((payload) => executeHoldingAction(api.addWatchlistItem, payload), [executeHoldingAction]);
+  const removeWatchlistItem = useCallback((payload) => executeHoldingAction(api.removeWatchlistItem, payload), [executeHoldingAction]);
+  const addPaperHolding = useCallback((payload) => executeHoldingAction(api.addPaperHolding, payload), [executeHoldingAction]);
+  const sellPaperHolding = useCallback((payload) => executeHoldingAction(api.sellPaperHolding, payload), [executeHoldingAction]);
+  const updatePaperCapital = useCallback((payload) => executeHoldingAction(api.updatePaperCapital, payload), [executeHoldingAction]);
+  const resetPaperPortfolio = useCallback(() => executeHoldingAction(api.resetPaperPortfolio, {}), [executeHoldingAction]);
 
+  const prefetchSecondaryData = useCallback((portfolioData) => {
+    if (!isLoggedIn()) return;
     setTimeout(async () => {
-      // 1. Prefetch main news (fire-and-forget) - ONLY for GAS
+      const isSupabase = localStorage.getItem('backend_target') === 'SUPABASE' || (!localStorage.getItem('backend_target') && import.meta.env.VITE_BACKEND_TARGET === 'SUPABASE');
+
       if (!isSupabase) {
         try {
           const newsData = await api.getNews();
@@ -287,11 +319,10 @@ dispatch({
         }
       }
 
-      // 2. Prefetch news for every stock + ETF symbol in parallel
       const stockSymbols = (portfolioData?.stocks?.data || []).map((s) => s.symbol).filter(Boolean);
       const etfSymbols  = (portfolioData?.etfs?.data  || []).map((e) => e.symbol).filter(Boolean);
       const allSymbols  = [...new Set([...stockSymbols, ...etfSymbols])]
-        .map((s) => s.replace(/^[^:]+:/, '')); // strip NSE:/BSE: prefix
+        .map((s) => s.replace(/^[^:]+:/, ''));
 
       await Promise.allSettled(
         allSymbols.map(async (symbol) => {
@@ -309,12 +340,16 @@ dispatch({
   }, []);
 
   useEffect(() => {
+    if (!isLoggedIn()) {
+      dispatch({ type: 'RESET_STATE' });
+      return;
+    }
+
     let intervalId;
     let cancelled = false;
 
     refreshAll().then(() => {
       if (!cancelled) {
-        // Kick off prefetch of news + company docs after primary data is loaded
         prefetchSecondaryData(state);
         intervalId = window.setInterval(refreshLiveHoldings, LIVE_REFRESH_INTERVAL_MS);
       }
@@ -328,11 +363,12 @@ dispatch({
       cancelled = true;
       if (intervalId) window.clearInterval(intervalId);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run once on mount only
+  }, [refreshAll, refreshLiveHoldings, prefetchSecondaryData]);
 
   // Optimized Cache Sync
   useEffect(() => {
+    if (!isLoggedIn()) return;
+
     const hasData =
       state.overallInvestments.data ||
       state.assetAllocation.data ||
@@ -366,17 +402,22 @@ dispatch({
     fetchEtfs,
     fetchMutualFunds,
     fetchFDs,
-    refreshLiveHoldings,
+    fetchWatchlist,
+    fetchPaperPortfolio,
     refreshAll,
+    refreshLiveHoldings,
     buyMore,
     updateHolding,
     sellHolding,
     addHolding,
     updateFD,
     deleteFD,
-    // Prefetched secondary data
-    prefetchedNews: state.news,
-    prefetchedStockNews: state.stockNews,
+    addWatchlistItem,
+    removeWatchlistItem,
+    addPaperHolding,
+    sellPaperHolding,
+    updatePaperCapital,
+    resetPaperPortfolio,
   };
 
   return (

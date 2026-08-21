@@ -8,6 +8,7 @@ import BottomNav from './components/navigation/BottomNav';
 import Skeleton from './components/ui/Skeleton';
 import LoginPage from "./pages/Login/LoginPage";
 import { isLoggedIn } from "./services/apiClient";
+import VoiceAssistant from './components/VoiceAssistant';
 
 // ---------------------------------------------------------------------------
 // Lazy page imports — each page becomes its own bundle chunk
@@ -15,8 +16,12 @@ import { isLoggedIn } from "./services/apiClient";
 const DashboardPage  = lazy(() => import('./pages/Dashboard/DashboardPage'));
 const AnalyticsPage  = lazy(() => import('./pages/Analytics/AnalyticsPage'));
 const PortfolioPage  = lazy(() => import('./pages/Portfolio/PortfolioPage'));
+const WatchlistPage  = lazy(() => import('./pages/Watchlist/WatchlistPage'));
+const PaperTradePage = lazy(() => import('./pages/PaperTrade/PaperTradePage'));
 const DetailScreen   = lazy(() => import('./pages/Portfolio/DetailScreen'));
 const SettingsPage   = lazy(() => import('./pages/Settings/SettingsPage'));
+const IpoListPage    = lazy(() => import('./pages/IPO/IpoListPage'));
+const IpoDetailPage  = lazy(() => import('./pages/IPO/IpoDetailPage'));
 
 // ---------------------------------------------------------------------------
 // Page-level Suspense fallback
@@ -31,8 +36,6 @@ function PageFallback() {
     </div>
   );
 }
-
-import VoiceAssistant from './components/VoiceAssistant';
 
 // ---------------------------------------------------------------------------
 // AppShell — wraps every page; renders active page via <Outlet> + <BottomNav>
@@ -174,8 +177,12 @@ function AppContent() {
           <Route index element={<DashboardPage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="portfolio" element={<PortfolioPage />} />
+          <Route path="watchlist" element={<WatchlistPage />} />
+          <Route path="paper-trade" element={<PaperTradePage />} />
           <Route path="portfolio/holding-detail" element={<DetailScreen />} />
           <Route path="holding-detail" element={<DetailScreen />} />
+          <Route path="ipo" element={<IpoListPage />} />
+          <Route path="ipo/:id" element={<IpoDetailPage />} />
           <Route path="settings" element={<SettingsPage />} />
         </Route>
       </Routes>

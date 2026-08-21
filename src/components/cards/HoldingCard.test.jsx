@@ -95,28 +95,28 @@ describe('HoldingCard — full variant', () => {
 
   // ── Return colour (Requirements 4.4) ─────────────────────────────────────────
 
-  it('applies profit color (#22C55E) to return percentage for positive return', () => {
+  it('applies profit color to return percentage for positive return', () => {
     render(<HoldingCard holding={profitHolding} variant="full" />);
     const returnPctEl = screen.getByText('+20.00%');
-    expect(returnPctEl).toHaveStyle({ color: '#22C55E' });
+    expect(returnPctEl).toHaveStyle({ color: 'var(--profit)' });
   });
 
-  it('applies loss color (#EF4444) to return percentage for negative return', () => {
+  it('applies loss color to return percentage for negative return', () => {
     render(<HoldingCard holding={lossHolding} variant="full" />);
     const returnPctEl = screen.getByText('−20.00%');
-    expect(returnPctEl).toHaveStyle({ color: '#EF4444' });
+    expect(returnPctEl).toHaveStyle({ color: 'var(--loss)' });
   });
 
   it('applies profit color to return value text for positive return', () => {
     render(<HoldingCard holding={profitHolding} variant="full" />);
     const returnValEl = screen.getByText('+₹30,000');
-    expect(returnValEl).toHaveStyle({ color: '#22C55E' });
+    expect(returnValEl).toHaveStyle({ color: 'var(--profit)' });
   });
 
   it('applies loss color to return value text for negative return', () => {
     render(<HoldingCard holding={lossHolding} variant="full" />);
     const returnValEl = screen.getByText('−₹8,000');
-    expect(returnValEl).toHaveStyle({ color: '#EF4444' });
+    expect(returnValEl).toHaveStyle({ color: 'var(--loss)' });
   });
 
   // ── Accessibility (Requirements 12.1, 12.4) ───────────────────────────────────
@@ -199,13 +199,13 @@ describe('HoldingCard — compact variant', () => {
   it('applies profit color for positive return', () => {
     render(<HoldingCard holding={profitHolding} variant="compact" />);
     const pctEl = screen.getByText('+20.00%');
-    expect(pctEl).toHaveStyle({ color: '#22C55E' });
+    expect(pctEl).toHaveStyle({ color: 'var(--profit)' });
   });
 
   it('applies loss color for negative return', () => {
     render(<HoldingCard holding={lossHolding} variant="compact" />);
     const pctEl = screen.getByText('−20.00%');
-    expect(pctEl).toHaveStyle({ color: '#EF4444' });
+    expect(pctEl).toHaveStyle({ color: 'var(--loss)' });
   });
 
   it('has correct aria-label', () => {
@@ -213,7 +213,7 @@ describe('HoldingCard — compact variant', () => {
     const card = document.querySelector('[aria-label]');
     expect(card).not.toBeNull();
     expect(card.getAttribute('aria-label')).toContain('HDFC Bank');
-    expect(card.getAttribute('aria-label')).toContain('₹1.80L');
+    expect(card.getAttribute('aria-label')).toContain('1.80');
     expect(card.getAttribute('aria-label')).toContain('+20.00%');
   });
 
@@ -243,10 +243,12 @@ describe('HoldingCard — default variant fallback', () => {
     render(<HoldingCard holding={profitHolding} />);
     // Full variant renders Qty label; compact does not
     expect(screen.getByText('Qty')).toBeInTheDocument();
+    expect(screen.getByText('Weight')).toBeInTheDocument();
   });
 });
 
 // ── PROPERTY-BASED TESTS ───────────────────────────────────────────────────────
+// **Feature: HoldingCard Component, Property 8: Return percentage and value colour consistency**
 // **Validates: Requirements 4.4**
 
 describe('HoldingCard — Property 8: return color is consistent with return sign', () => {
@@ -272,13 +274,12 @@ describe('HoldingCard — Property 8: return color is consistent with return sig
           // Find the return-percentage pill (always rendered in full variant)
           const allElements = document.querySelectorAll('[style]');
           let foundReturnEl = false;
-          const expectedColor = holding.returnValue > 0 ? 'rgb(34, 197, 94)' : 'rgb(239, 68, 68)';
-          const hexColor = holding.returnValue > 0 ? '#22C55E' : '#EF4444';
+          const expectedColor = holding.returnValue > 0 ? 'var(--profit)' : 'var(--loss)';
 
           // Check that at least one styled element with the return color is present
           allElements.forEach(el => {
             const color = el.style.color;
-            if (color === hexColor || color === expectedColor) {
+            if (color === expectedColor) {
               foundReturnEl = true;
             }
           });

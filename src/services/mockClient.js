@@ -16,6 +16,205 @@ let etfs = [...etfsData];
 let mutualFunds = [...mutualfundsData];
 let fds = [...fdsData];
 
+let mockNseStocks = [
+  { symbol: 'RELIANCE', name: 'Reliance Industries Ltd', isin: 'INE002A01018', sector: 'Energy', series: 'EQ' },
+  { symbol: 'TCS', name: 'Tata Consultancy Services Ltd', isin: 'INE467B01029', sector: 'Technology', series: 'EQ' },
+  { symbol: 'HDFCBANK', name: 'HDFC Bank Ltd', isin: 'INE040A01034', sector: 'Financial Services', series: 'EQ' },
+  { symbol: 'INFY', name: 'Infosys Ltd', isin: 'INE009A01021', sector: 'Technology', series: 'EQ' },
+  { symbol: 'ICICIBANK', name: 'ICICI Bank Ltd', isin: 'INE090A01021', sector: 'Financial Services', series: 'EQ' },
+  { symbol: 'TATAMOTORS', name: 'Tata Motors Ltd', isin: 'INE155A01022', sector: 'Automobile and Auto Components', series: 'EQ' },
+  { symbol: 'ITC', name: 'ITC Ltd', isin: 'INE154A01025', sector: 'Fast Moving Consumer Goods', series: 'EQ' },
+  { symbol: 'SBIN', name: 'State Bank of India', isin: 'INE062A01020', sector: 'Financial Services', series: 'EQ' },
+  { symbol: 'BHARTIARTL', name: 'Bharti Airtel Ltd', isin: 'INE397D01024', sector: 'Telecommunication', series: 'EQ' },
+  { symbol: 'LT', name: 'Larsen & Toubro Ltd', isin: 'INE018A01030', sector: 'Construction', series: 'EQ' }
+];
+
+let mockWatchlist = [
+  {
+    watchlistId: 'mock-wl-1',
+    symbol: 'TATAMOTORS',
+    isin: 'INE155A01022',
+    name: 'Tata Motors Ltd',
+    sector: 'Automobile and Auto Components',
+    confidence: 'High',
+    badge: 'Trade',
+    addedPrice: 980.00,
+    targetPrice: 1150.00,
+    notes: 'Electric vehicle market share expansion',
+    addedAt: '2026-08-01T10:00:00.000Z',
+    currentPrice: 1020.50,
+    prevClose: 1005.00,
+    returnSinceAddedPct: 4.13,
+    returnSinceAddedAbs: 40.50,
+    dayChangePercent: 1.54,
+    dayChangeAbs: 15.50,
+    inPortfolio: true
+  },
+  {
+    watchlistId: 'mock-wl-2',
+    symbol: 'BHARTIARTL',
+    isin: 'INE397D01024',
+    name: 'Bharti Airtel Ltd',
+    sector: 'Telecommunication',
+    confidence: 'Medium',
+    badge: 'Longterm',
+    addedPrice: 1450.00,
+    targetPrice: 1650.00,
+    notes: 'ARPU growth and 5G monetization',
+    addedAt: '2026-08-10T12:00:00.000Z',
+    currentPrice: 1510.00,
+    prevClose: 1495.00,
+    returnSinceAddedPct: 4.14,
+    returnSinceAddedAbs: 60.00,
+    dayChangePercent: 1.00,
+    dayChangeAbs: 15.00,
+    inPortfolio: false
+  }
+];
+
+let mockPaperConfig = {
+  initialCapital: 5000000,
+  currentCash: 4500000,
+  realizedPnl: 25000
+};
+
+let mockPaperHoldings = [
+  {
+    srNo: 1,
+    assetId: 'mock-paper-1',
+    symbol: 'RELIANCE',
+    name: 'Reliance Industries Ltd',
+    sector: 'Energy',
+    confidence: 'Very High',
+    badge: 'Longterm',
+    quantity: 100,
+    buyPrice: 2850.00,
+    investedValue: 285000.00,
+    currentPrice: 2980.00,
+    prevClose: 2950.00,
+    currentValue: 298000.00,
+    returnAbs: 13000.00,
+    returnPct: 4.56,
+    dayChangeAbs: 3000.00,
+    dayChangePercent: 1.02
+  },
+  {
+    srNo: 2,
+    assetId: 'mock-paper-2',
+    symbol: 'INFY',
+    name: 'Infosys Ltd',
+    sector: 'Technology',
+    confidence: 'High',
+    badge: 'Trade',
+    quantity: 150,
+    buyPrice: 1420.00,
+    investedValue: 213000.00,
+    currentPrice: 1465.00,
+    prevClose: 1450.00,
+    currentValue: 219750.00,
+    returnAbs: 6750.00,
+    returnPct: 3.17,
+    dayChangeAbs: 2250.00,
+    dayChangePercent: 1.03
+  }
+];
+
+let mockIpos = [
+  {
+    id: 101,
+    name: 'Premier Energies Ltd',
+    category: 'IPO',
+    status: 'Open',
+    statusBadge: 'Open',
+    gmpAmount: 425,
+    gmpPercent: 94.44,
+    gmpTrend: '400 - 450',
+    ratingFlames: 5,
+    priceStr: '450',
+    priceNum: 450,
+    ipoSize: '₹2,830 Cr',
+    lotSize: 33,
+    peRatio: '24.5',
+    subscription: '15.2x',
+    openDate: '27 Aug 2026',
+    closeDate: '29 Aug 2026',
+    boaDate: '30 Aug 2026',
+    listingDate: '03 Sep 2026',
+    sortOpen: '2026-08-27',
+    sortClose: '2026-08-29',
+    sortBoa: '2026-08-30',
+    sortListing: '2026-09-03',
+    updatedOn: '28 Aug 2026, 17:30',
+    anchorAvailable: true,
+    investorGainUrl: 'https://www.investorgain.com',
+    allotmentUrl: null,
+    expectedProfit: 14025,
+    minInvestment: 14850
+  },
+  {
+    id: 102,
+    name: 'Bajaj Housing Finance Ltd',
+    category: 'IPO',
+    status: 'Upcoming',
+    statusBadge: 'Upcoming',
+    gmpAmount: 65,
+    gmpPercent: 92.86,
+    gmpTrend: '60 - 70',
+    ratingFlames: 5,
+    priceStr: '70',
+    priceNum: 70,
+    ipoSize: '₹6,560 Cr',
+    lotSize: 214,
+    peRatio: '18.2',
+    subscription: '-',
+    openDate: '09 Sep 2026',
+    closeDate: '11 Sep 2026',
+    boaDate: '12 Sep 2026',
+    listingDate: '16 Sep 2026',
+    sortOpen: '2026-09-09',
+    sortClose: '2026-09-11',
+    sortBoa: '2026-09-12',
+    sortListing: '2026-09-16',
+    updatedOn: '28 Aug 2026, 18:00',
+    anchorAvailable: true,
+    investorGainUrl: 'https://www.investorgain.com',
+    allotmentUrl: null,
+    expectedProfit: 13910,
+    minInvestment: 14980
+  },
+  {
+    id: 103,
+    name: 'Unicommerce eSolutions Ltd',
+    category: 'IPO',
+    status: 'Listed',
+    statusBadge: 'L@235',
+    gmpAmount: 110,
+    gmpPercent: 101.85,
+    gmpTrend: '100 - 115',
+    ratingFlames: 4,
+    priceStr: '108',
+    priceNum: 108,
+    ipoSize: '₹276 Cr',
+    lotSize: 138,
+    peRatio: '32.1',
+    subscription: '168.3x',
+    openDate: '06 Aug 2026',
+    closeDate: '08 Aug 2026',
+    boaDate: '09 Aug 2026',
+    listingDate: '13 Aug 2026',
+    sortOpen: '2026-08-06',
+    sortClose: '2026-08-08',
+    sortBoa: '2026-08-09',
+    sortListing: '2026-08-13',
+    updatedOn: '13 Aug 2026, 10:00',
+    anchorAvailable: true,
+    investorGainUrl: 'https://www.investorgain.com',
+    allotmentUrl: 'https://linkintime.co.in',
+    expectedProfit: 15180,
+    minInvestment: 14904
+  }
+];
+
 // ── Mock News Data ─────────────────────────────────────────────────────────────
 const MOCK_NEWS = [
   {
@@ -539,6 +738,7 @@ const realMockApi = {
   },
 
   getOverallInvestments: async () => {
+    console.warn('[MOCK DATA] Using mock data for endpoint: overallInvestments');
     const s = await realMockApi.getStocks();
     const e = await realMockApi.getEtfs();
     const m = await realMockApi.getMutualFunds();
@@ -577,6 +777,7 @@ const realMockApi = {
   },
 
   getAssetAllocation: async () => {
+    console.warn('[MOCK DATA] Using mock data for endpoint: assetAllocation');
     const s = await realMockApi.getStocks();
     const e = await realMockApi.getEtfs();
     const m = await realMockApi.getMutualFunds();
@@ -601,6 +802,7 @@ const realMockApi = {
   },
 
   getOverallSectorAllocation: async () => {
+    console.warn('[MOCK DATA] Using mock data for endpoint: overallSectorAllocation');
     const s = await realMockApi.getStocks();
     const all = s;
 
@@ -624,6 +826,7 @@ const realMockApi = {
   },
 
   getStocksAllocation: async () => {
+    console.warn('[MOCK DATA] Using mock data for endpoint: stocksAllocation');
     const s = await realMockApi.getStocks();
     const totalCur = s.reduce((acc, x) => acc + (x.currentValue ?? 0), 0);
 
@@ -860,6 +1063,204 @@ const realMockApi = {
       speechText: "Your total portfolio is currently showing a net gain of ₹2,45,000 across all assets.",
       data: null
     };
+  },
+
+  // ── Master NSE Stock Search Mock ───────────────────────────────────────────
+  searchNseStocks: async (query) => {
+    await new Promise(resolve => setTimeout(resolve, 50));
+    if (!query || !query.trim()) return [];
+    const q = query.trim().toLowerCase();
+    return mockNseStocks.filter(s =>
+      s.symbol.toLowerCase().includes(q) ||
+      s.name.toLowerCase().includes(q) ||
+      s.isin.toLowerCase().includes(q)
+    );
+  },
+
+  // ── Watchlist Mock APIs ───────────────────────────────────────────────────
+  getWatchlist: async () => {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return [...mockWatchlist];
+  },
+
+  addWatchlistItem: async (payload) => {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const sym = (payload.symbol || '').toUpperCase().trim();
+    const existingIdx = mockWatchlist.findIndex(x => x.symbol === sym);
+    const addedPrice = Number(payload.added_price || payload.addedPrice || payload.price || 1000);
+
+    const newItem = {
+      watchlistId: `mock-wl-${Date.now()}`,
+      symbol: sym,
+      isin: payload.isin || '',
+      name: payload.name || sym,
+      sector: payload.sector || 'Other',
+      confidence: payload.confidence || 'Medium',
+      badge: payload.badge || 'Trade',
+      addedPrice,
+      targetPrice: payload.target_price || payload.targetPrice ? Number(payload.target_price || payload.targetPrice) : null,
+      notes: payload.notes || '',
+      addedAt: new Date().toISOString(),
+      currentPrice: addedPrice,
+      prevClose: addedPrice,
+      returnSinceAddedPct: 0,
+      returnSinceAddedAbs: 0,
+      dayChangePercent: 0,
+      dayChangeAbs: 0,
+      inPortfolio: stocks.some(s => s.symbol === sym)
+    };
+
+    if (existingIdx !== -1) {
+      mockWatchlist[existingIdx] = { ...mockWatchlist[existingIdx], ...newItem };
+    } else {
+      mockWatchlist.unshift(newItem);
+    }
+    return { success: true, item: newItem };
+  },
+
+  removeWatchlistItem: async (payload) => {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const targetId = payload.watchlistId || payload.watchlist_id;
+    const sym = payload.symbol;
+    if (targetId) {
+      mockWatchlist = mockWatchlist.filter(x => x.watchlistId !== targetId);
+    } else if (sym) {
+      mockWatchlist = mockWatchlist.filter(x => x.symbol !== sym);
+    }
+    return { success: true };
+  },
+
+  // ── Paper Trading Mock APIs ───────────────────────────────────────────────
+  getPaperPortfolio: async () => {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const totCurrent = mockPaperHoldings.reduce((acc, h) => acc + (h.currentValue || 0), 0);
+    const totInvested = mockPaperHoldings.reduce((acc, h) => acc + (h.investedValue || 0), 0);
+    const unrealizedPnl = totCurrent - totInvested;
+    const dayChange = mockPaperHoldings.reduce((acc, h) => acc + (h.dayChangeAbs || 0), 0);
+
+    const summary = {
+      initialCapital: mockPaperConfig.initialCapital,
+      currentCash: mockPaperConfig.currentCash,
+      realizedPnl: mockPaperConfig.realizedPnl,
+      totalInvested: totInvested,
+      totalCurrent: totCurrent,
+      unrealizedPnl,
+      totalDayChange: dayChange,
+      portfolioValue: mockPaperConfig.currentCash + totCurrent,
+      totalPnl: (mockPaperConfig.currentCash + totCurrent) - mockPaperConfig.initialCapital,
+      totalPnlPct: mockPaperConfig.initialCapital > 0
+        ? (((mockPaperConfig.currentCash + totCurrent) - mockPaperConfig.initialCapital) / mockPaperConfig.initialCapital) * 100
+        : 0
+    };
+
+    return { summary, holdings: [...mockPaperHoldings] };
+  },
+
+  addPaperHolding: async (payload) => {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const qty = Number(payload.quantity);
+    const price = Number(payload.price);
+    const totalCost = qty * price;
+    const sym = (payload.symbol || '').toUpperCase().trim();
+
+    if (totalCost > mockPaperConfig.currentCash) {
+      throw new Error(`Insufficient virtual cash balance. Required: ₹${totalCost}, Available: ₹${mockPaperConfig.currentCash}`);
+    }
+
+    mockPaperConfig.currentCash -= totalCost;
+
+    const existingIdx = mockPaperHoldings.findIndex(x => x.symbol === sym);
+    if (existingIdx !== -1) {
+      const h = mockPaperHoldings[existingIdx];
+      const newQty = h.quantity + qty;
+      const newCost = (h.quantity * h.buyPrice) + totalCost;
+      h.quantity = newQty;
+      h.buyPrice = newCost / newQty;
+      h.investedValue = newCost;
+      h.currentValue = newQty * (price * 1.01);
+      h.returnAbs = h.currentValue - h.investedValue;
+      h.returnPct = (h.returnAbs / h.investedValue) * 100;
+    } else {
+      mockPaperHoldings.push({
+        srNo: mockPaperHoldings.length + 1,
+        assetId: `mock-paper-${Date.now()}`,
+        symbol: sym,
+        name: payload.name || sym,
+        sector: payload.sector || 'Other',
+        confidence: payload.confidence || 'Medium',
+        badge: payload.badge || 'Trade',
+        quantity: qty,
+        buyPrice: price,
+        investedValue: totalCost,
+        currentPrice: price * 1.01,
+        prevClose: price,
+        currentValue: totalCost * 1.01,
+        returnAbs: totalCost * 0.01,
+        returnPct: 1.0,
+        dayChangeAbs: totalCost * 0.01,
+        dayChangePercent: 1.0
+      });
+    }
+
+    return { success: true };
+  },
+
+  sellPaperHolding: async (payload) => {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const targetId = payload.assetId || payload.asset_id;
+    const sellQty = Number(payload.quantity);
+    const sellPrice = Number(payload.price);
+
+    const idx = mockPaperHoldings.findIndex(x => x.assetId === targetId);
+    if (idx !== -1) {
+      const h = mockPaperHoldings[idx];
+      const actualSellPrice = sellPrice > 0 ? sellPrice : h.currentPrice;
+      const proceeds = sellQty * actualSellPrice;
+      const gain = (actualSellPrice - h.buyPrice) * sellQty;
+
+      mockPaperConfig.currentCash += proceeds;
+      mockPaperConfig.realizedPnl += gain;
+
+      if (sellQty >= h.quantity) {
+        mockPaperHoldings.splice(idx, 1);
+      } else {
+        h.quantity -= sellQty;
+        h.investedValue = h.quantity * h.buyPrice;
+        h.currentValue = h.quantity * actualSellPrice;
+        h.returnAbs = h.currentValue - h.investedValue;
+        h.returnPct = h.investedValue > 0 ? (h.returnAbs / h.investedValue) * 100 : 0;
+      }
+    }
+
+    return { success: true };
+  },
+
+  updatePaperCapital: async (payload) => {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    const newCap = Number(payload.newCapital || payload.initialCapital);
+    const diff = newCap - mockPaperConfig.initialCapital;
+    mockPaperConfig.initialCapital = newCap;
+    mockPaperConfig.currentCash = Math.max(0, mockPaperConfig.currentCash + diff);
+    return { success: true, config: mockPaperConfig };
+  },
+
+  resetPaperPortfolio: async () => {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    mockPaperHoldings = [];
+    mockPaperConfig.currentCash = mockPaperConfig.initialCapital;
+    mockPaperConfig.realizedPnl = 0;
+    return { success: true };
+  },
+
+  // ── Mainboard IPO Mock APIs ───────────────────────────────────────────────
+  getIpos: async () => {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    return [...mockIpos];
+  },
+
+  getIpoById: async (id) => {
+    await new Promise(resolve => setTimeout(resolve, 50));
+    return mockIpos.find(x => String(x.id) === String(id)) || null;
   }
 };
 

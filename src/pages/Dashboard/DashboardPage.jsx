@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertCircle, RefreshCw, Settings, Newspaper } from 'lucide-react';
+import { AlertCircle, RefreshCw, Settings, Newspaper, Flame } from 'lucide-react';
 import { useState } from 'react';
 import { usePortfolio } from '../../context/PortfolioContext';
 
@@ -112,7 +112,11 @@ export default function DashboardPage() {
         </AnimatePresence>
 
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.35 }}>
-          <OverallInvestments data={overallInvestments.data} loading={overallInvestments.loading} />
+          <OverallInvestments
+            data={overallInvestments.data}
+            todayData={todayPerformance.data}
+            loading={overallInvestments.loading || todayPerformance.loading}
+          />
           <TodayPerformance data={todayPerformance.data} loading={todayPerformance.loading} />
           <AssetAllocation data={assetAllocation.data} loading={assetAllocation.loading} />
           <OverallSectorAllocation data={overallSectorAllocation.data} loading={overallSectorAllocation.loading} />
