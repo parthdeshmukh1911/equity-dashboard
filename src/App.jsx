@@ -1,41 +1,26 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { BrowserRouter, Routes, Route, Outlet, useNavigate } from 'react-router-dom';
 
 import { ThemeProvider } from './context/ThemeContext';
 import { PortfolioProvider } from './context/PortfolioContext';
 import { PrivacyProvider } from './context/PrivacyContext';
 import BottomNav from './components/navigation/BottomNav';
-import Skeleton from './components/ui/Skeleton';
 import LoginPage from "./pages/Login/LoginPage";
 import { isLoggedIn } from "./services/apiClient";
 import VoiceAssistant from './components/VoiceAssistant';
 
 // ---------------------------------------------------------------------------
-// Lazy page imports — each page becomes its own bundle chunk
+// Direct page imports for instantaneous tab switching without Suspense flash
 // ---------------------------------------------------------------------------
-const DashboardPage  = lazy(() => import('./pages/Dashboard/DashboardPage'));
-const AnalyticsPage  = lazy(() => import('./pages/Analytics/AnalyticsPage'));
-const PortfolioPage  = lazy(() => import('./pages/Portfolio/PortfolioPage'));
-const WatchlistPage  = lazy(() => import('./pages/Watchlist/WatchlistPage'));
-const PaperTradePage = lazy(() => import('./pages/PaperTrade/PaperTradePage'));
-const DetailScreen   = lazy(() => import('./pages/Portfolio/DetailScreen'));
-const SettingsPage   = lazy(() => import('./pages/Settings/SettingsPage'));
-const IpoListPage    = lazy(() => import('./pages/IPO/IpoListPage'));
-const IpoDetailPage  = lazy(() => import('./pages/IPO/IpoDetailPage'));
-
-// ---------------------------------------------------------------------------
-// Page-level Suspense fallback
-// ---------------------------------------------------------------------------
-function PageFallback() {
-  return (
-    <div className="flex flex-col gap-4 px-4 pt-6 pb-24" role="status" aria-label="Loading page…">
-      <Skeleton height={48} rounded="xl" />
-      <Skeleton height={200} rounded="card" />
-      <Skeleton height={120} rounded="card" />
-      <Skeleton height={80} rounded="card" />
-    </div>
-  );
-}
+import DashboardPage from './pages/Dashboard/DashboardPage';
+import AnalyticsPage from './pages/Analytics/AnalyticsPage';
+import PortfolioPage from './pages/Portfolio/PortfolioPage';
+import WatchlistPage from './pages/Watchlist/WatchlistPage';
+import PaperTradePage from './pages/PaperTrade/PaperTradePage';
+import DetailScreen from './pages/Portfolio/DetailScreen';
+import SettingsPage from './pages/Settings/SettingsPage';
+import IpoListPage from './pages/IPO/IpoListPage';
+import IpoDetailPage from './pages/IPO/IpoDetailPage';
 
 // ---------------------------------------------------------------------------
 // AppShell — wraps every page; renders active page via <Outlet> + <BottomNav>
@@ -53,10 +38,8 @@ function AppShell() {
         }}
       />
 
-      {/* Active page renders here */}
-      <Suspense fallback={<PageFallback />}>
-        <Outlet />
-      </Suspense>
+      {/* Active page renders instantly without Suspense delay */}
+      <Outlet />
 
       {/* BottomNav is always visible outside the page outlet */}
       <BottomNav />

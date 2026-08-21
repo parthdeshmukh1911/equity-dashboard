@@ -378,7 +378,9 @@ export function PortfolioProvider({ children }) {
       state.stocks.data ||
       state.etfs.data ||
       state.mutualFunds.data ||
-      state.fds.data;
+      state.fds.data ||
+      state.watchlist?.data ||
+      state.paperTrade?.data;
 
     if (!hasData) return;
 

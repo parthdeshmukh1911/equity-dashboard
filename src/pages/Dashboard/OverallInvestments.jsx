@@ -66,10 +66,7 @@ export default function OverallInvestments({ data, loading }) {
 
   return (
     <section className="mb-5">
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35 }}
+      <div
         className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200"
         style={{
           background: 'var(--card-bg)',
@@ -243,7 +240,7 @@ export default function OverallInvestments({ data, loading }) {
             </motion.div>
           )}
         </AnimatePresence>
-      </motion.div>
+      </div>
     </section>
   );
 }

@@ -203,14 +203,12 @@ export default function WatchlistPage() {
   }
 
   return (
-    <motion.main
+    <main
       className="relative flex min-h-0 flex-1 flex-col overflow-y-auto"
       style={{
         background: 'var(--bg)',
         paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))',
       }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
     >
       {/* Sticky Header */}
       <div
@@ -330,12 +328,8 @@ export default function WatchlistPage() {
             const returnSinceAddedAbsFormatted = Number(item.returnSinceAddedAbs || 0).toFixed(2);
 
             return (
-              <motion.div
+              <div
                 key={item.watchlistId || item.symbol}
-                layout
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
                 className="p-4 rounded-3xl relative overflow-hidden transition-all shadow-sm"
                 style={{
                   background: 'var(--card-bg)',
@@ -446,7 +440,7 @@ export default function WatchlistPage() {
                     </button>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })
         )}
@@ -454,6 +448,6 @@ export default function WatchlistPage() {
 
       <AddWatchlistModal isOpen={addModalOpen} onClose={() => setAddModalOpen(false)} />
       <ConvertToPortfolioModal item={selectedConvertItem} isOpen={Boolean(selectedConvertItem)} onClose={() => setSelectedConvertItem(null)} />
-    </motion.main>
+    </main>
   );
 }

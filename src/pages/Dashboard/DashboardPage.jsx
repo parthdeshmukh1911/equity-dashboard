@@ -111,7 +111,7 @@ export default function DashboardPage() {
           {hasError && <ErrorBanner key="err" onRetry={refreshAll} />}
         </AnimatePresence>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.35 }}>
+        <div>
           <OverallInvestments
             data={overallInvestments.data}
             todayData={todayPerformance.data}
@@ -121,7 +121,7 @@ export default function DashboardPage() {
           <AssetAllocation data={assetAllocation.data} loading={assetAllocation.loading} />
           <OverallSectorAllocation data={overallSectorAllocation.data} loading={overallSectorAllocation.loading} />
           <StocksAllocation data={stocksAllocation.data} loading={stocksAllocation.loading} />
-        </motion.div>
+        </div>
       </div>
 
       {/* Market News Overlay */}

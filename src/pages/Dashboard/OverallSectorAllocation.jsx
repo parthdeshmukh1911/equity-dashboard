@@ -32,9 +32,7 @@ export default function OverallSectorAllocation({ data, loading }) {
       <p className="text-xs font-semibold uppercase tracking-widest mb-3 px-1" style={{ color: 'var(--text-muted)' }}>
         Sector Exposure
       </p>
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
+      <div
         className="rounded-2xl p-5 space-y-4"
         style={{
           background: 'var(--card-bg)',
@@ -70,7 +68,7 @@ export default function OverallSectorAllocation({ data, loading }) {
             </div>
           );
         })}
-      </motion.div>
+      </div>
     </section>
   );
 }

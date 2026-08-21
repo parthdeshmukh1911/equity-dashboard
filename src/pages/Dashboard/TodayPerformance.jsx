@@ -54,10 +54,7 @@ export default function TodayPerformance({ data, loading }) {
 
   return (
     <section className="mb-5">
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, delay: 0.05 }}
+      <div
         className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200"
         style={{
           background: 'var(--card-bg)',
@@ -133,7 +130,7 @@ export default function TodayPerformance({ data, loading }) {
             })}
           </div>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }

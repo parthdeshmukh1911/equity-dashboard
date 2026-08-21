@@ -54,14 +54,12 @@ export default function PaperTradePage() {
   );
 
   return (
-    <motion.main
+    <main
       className="relative flex min-h-0 flex-1 flex-col overflow-y-auto"
       style={{
         background: 'var(--bg)',
         paddingBottom: 'calc(5.5rem + env(safe-area-inset-bottom))',
       }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
     >
       {/* Sticky Header */}
       <div
@@ -232,11 +230,8 @@ export default function PaperTradePage() {
                 const returnPctFormatted = Number(h.returnPct || 0).toFixed(2);
 
                 return (
-                  <motion.div
+                  <div
                     key={h.assetId}
-                    layout
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
                     className="p-4 rounded-3xl relative overflow-hidden transition-all shadow-sm"
                     style={{
                       background: 'var(--card-bg)',
@@ -309,7 +304,7 @@ export default function PaperTradePage() {
                         Sell Position
                       </button>
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
@@ -319,6 +314,6 @@ export default function PaperTradePage() {
 
       <AddPaperTradeModal isOpen={addModalOpen} onClose={() => setAddModalOpen(false)} />
       <SellPaperTradeModal holding={sellingHolding} isOpen={Boolean(sellingHolding)} onClose={() => setSellingHolding(null)} />
-    </motion.main>
+    </main>
   );
 }

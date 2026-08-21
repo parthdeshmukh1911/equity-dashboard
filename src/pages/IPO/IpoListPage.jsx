@@ -29,8 +29,22 @@ export default function IpoListPage() {
   const scrollRef = usePageScrollRestoration('ipo_list');
   const searchInputRef = useRef(null);
 
-  const [ipos, setIpos] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [ipos, setIpos] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('ipo_list_cache');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [loading, setLoading] = useState(() => {
+    try {
+      const cached = sessionStorage.getItem('ipo_list_cache');
+      return !cached || JSON.parse(cached).length === 0;
+    } catch {
+      return true;
+    }
+  });
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -42,13 +56,17 @@ export default function IpoListPage() {
   async function fetchIpos(isRefresh = false) {
     try {
       if (isRefresh) setRefreshing(true);
-      else setLoading(true);
+      else if (!ipos || ipos.length === 0) setLoading(true);
 
       const list = await api.getIpos();
-      setIpos(list || []);
+      if (Array.isArray(list)) {
+        setIpos(list);
+        try {
+          sessionStorage.setItem('ipo_list_cache', JSON.stringify(list));
+        } catch (_) {}
+      }
     } catch (err) {
       console.error('Failed to load IPO data:', err);
-      setIpos([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -56,7 +74,7 @@ export default function IpoListPage() {
   }
 
   useEffect(() => {
-    fetchIpos();
+    fetchIpos(ipos.length > 0);
   }, []);
 
   useEffect(() => {
